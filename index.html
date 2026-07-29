@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bazaar</title>
+    <title>Monopixel</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%230d1117'/><text x='16' y='23' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='20' fill='%237b61ff'>M</text></svg>">
     <script>
         // prevent theme flash — set data-theme before first paint
         (function() {
@@ -18,11 +19,12 @@
 <body>
     <header>
         <div class="header-left">
-            <h1>skyblock bazaar</h1>
+            <h1>monopixel</h1>
             <span class="status" id="status">loading</span>
         </div>
         <div class="header-right">
             <span class="last-updated" id="lastUpdated">—</span>
+            <span class="refresh-countdown" id="refreshCountdown" title="auto-refreshes every 60s">auto</span>
             <div class="theme-switcher">
                 <button id="themeBtn" class="btn theme-btn" title="theme">
                     <span id="themeIcon">◐</span>
@@ -35,6 +37,7 @@
                     <button class="theme-option" data-theme="skyblock">skyblock</button>
                 </div>
             </div>
+            <button id="alertBtn" class="btn" title="price alerts" onclick="renderAlertModal()">🔔<span id="alertBadge" class="alert-badge"></span></button>
             <button id="refreshBtn" class="btn" title="refresh">↻</button>
         </div>
     </header>
@@ -58,11 +61,21 @@
                 <p>live prices from the hypixel bazaar &mdash; click any column header to sort</p>
                 <p class="section-hint"><span class="dot-positive"></span> profit &nbsp; <span class="dot-negative"></span> loss &nbsp; (after order flipping)</p>
             </div>
+            <div class="filter-bar" id="bazaarFilters">
+                <button class="filter-btn active" data-filter="all">all</button>
+                <button class="filter-btn" data-filter="favorites">watchlist</button>
+                <button class="filter-btn" data-filter="farming">farming</button>
+                <button class="filter-btn" data-filter="mining">mining</button>
+                <button class="filter-btn" data-filter="combat">combat</button>
+                <button class="filter-btn" data-filter="foraging">foraging</button>
+                <button class="filter-btn" data-filter="fishing">fishing</button>
+                <button class="filter-btn" data-filter="oddities">oddities</button>
+            </div>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th class="sortable" data-sort="name">item <span class="arrow"></span></th>
+                            <th class="fav-th"></th>
                             <th class="sortable" data-sort="buyPrice" title="price you get if you sell now">sell now <span class="arrow"></span></th>
                             <th class="sortable" data-sort="sellPrice" title="price you pay if you buy now">buy now <span class="arrow"></span></th>
                             <th class="sortable" data-sort="spread" title="profit per item from placing orders">margin <span class="arrow"></span></th>
@@ -71,7 +84,7 @@
                         </tr>
                     </thead>
                     <tbody id="bazaarBody">
-                        <tr class="loading-row"><td colspan="6">loading&hellip;</td></tr>
+                        <tr class="loading-row"><td colspan="7">loading&hellip;</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -81,6 +94,11 @@
         <section id="methodsView" class="view">
             <div class="section-intro">
                 <p>money-making strategies using bazaar data</p>
+            </div>
+            <div class="calc-card">
+                <span class="calc-label">profit calculator</span>
+                <input type="number" id="calcBudget" class="calc-input" placeholder="your coin balance..." oninput="calcBestFlip()">
+                <div id="calcResult" class="calc-result"><span class="calc-hint">enter your coin balance</span></div>
             </div>
             <div class="methods-grid">
                 <div class="method-card" id="flipMethods">
@@ -209,7 +227,7 @@
                         </tr>
                     </thead>
                     <tbody id="fuseBody">
-                        <tr class="loading-row"><td colspan="6">loading&hellip;</td></tr>
+                        <tr class="loading-row"><td colspan="7">loading&hellip;</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -237,6 +255,15 @@
                 </table>
             </div>
         </section>
+
+        <!-- Alert Panel -->
+        <div id="alertPanel" class="alert-panel">
+            <div class="alert-panel-header">
+                <span>price alerts</span>
+                <button class="alert-panel-close" onclick="renderAlertModal()">×</button>
+            </div>
+            <div id="alertList" class="alert-list"></div>
+        </div>
 
         <!-- Guides View -->
         <section id="guidesView" class="view">

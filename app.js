@@ -364,6 +364,153 @@ const API_KEY = 'cc235486-2fb4-4cc4-ba02-cf74a9b1f0e5';
 let allItems = [];
 let currentSort = { field: 'spreadPct', dir: 'desc' };
 let currentView = 'bazaar';
+let currentBazaarCategory = 'all';
+
+// --- categories ---
+function getCategory(id) {
+    const catMap = {
+        // Farming crops
+        WHEAT:'farming', SEEDS:'farming', HAY_BLOCK:'farming', ENCHANTED_HAY_BLOCK:'farming', ENCHANTED_BREAD:'farming',
+        CARROT_ITEM:'farming', ENCHANTED_CARROT:'farming', POTATO_ITEM:'farming', ENCHANTED_POTATO:'farming', ENCHANTED_BAKED_POTATO:'farming',
+        PUMPKIN:'farming', ENCHANTED_PUMPKIN:'farming', POLISHED_PUMPKIN:'farming',
+        MELON:'farming', ENCHANTED_MELON:'farming', ENCHANTED_GLISTERING_MELON:'farming',
+        SUGAR_CANE:'farming', ENCHANTED_SUGAR:'farming', ENCHANTED_PAPER:'farming', ENCHANTED_SUGAR_CANE:'farming',
+        CACTUS:'farming', ENCHANTED_CACTUS_GREEN:'farming', ENCHANTED_CACTUS:'farming',
+        'INK_SACK:3':'farming', BROWN_MUSHROOM:'farming', RED_MUSHROOM:'farming', ENCHANTED_BROWN_MUSHROOM:'farming', ENCHANTED_RED_MUSHROOM:'farming',
+        ENCHANTED_HUGE_MUSHROOM_1:'farming', ENCHANTED_HUGE_MUSHROOM_2:'farming',
+        NETHER_STALK:'farming', ENCHANTED_NETHER_STALK:'farming', MUTANT_NETHER_STALK:'farming',
+        ENCHANTED_SEEDS:'farming', POLISHED_PEBBLE:'farming',
+        // Animal drops
+        LEATHER:'farming', ENCHANTED_LEATHER:'farming', RAW_BEEF:'farming', ENCHANTED_RAW_BEEF:'farming',
+        PORK:'farming', ENCHANTED_PORK:'farming', ENCHANTED_GRILLED_PORK:'farming',
+        RAW_CHICKEN:'farming', ENCHANTED_RAW_CHICKEN:'farming', ENCHANTED_EGG:'farming', SUPER_EGG:'farming',
+        FEATHER:'farming', ENCHANTED_FEATHER:'farming', MUTTON:'farming', ENCHANTED_MUTTON:'farming', ENCHANTED_COOKED_MUTTON:'farming',
+        RABBIT_HIDE:'farming', ENCHANTED_RABBIT_HIDE:'farming', RABBIT_FOOT:'farming', ENCHANTED_RABBIT_FOOT:'farming',
+        // Mining
+        COAL:'mining', ENCHANTED_COAL:'mining', ENCHANTED_CHARCOAL:'mining', ENCHANTED_COAL_BLOCK:'mining',
+        IRON_INGOT:'mining', ENCHANTED_IRON:'mining', ENCHANTED_IRON_BLOCK:'mining',
+        GOLD_INGOT:'mining', ENCHANTED_GOLD:'mining', ENCHANTED_GOLD_BLOCK:'mining',
+        DIAMOND:'mining', ENCHANTED_DIAMOND:'mining', ENCHANTED_DIAMOND_BLOCK:'mining',
+        EMERALD:'mining', ENCHANTED_EMERALD:'mining', ENCHANTED_EMERALD_BLOCK:'mining',
+        REDSTONE:'mining', ENCHANTED_REDSTONE:'mining', ENCHANTED_REDSTONE_BLOCK:'mining',
+        LAPIS_LAZULI:'mining', ENCHANTED_LAPIS_LAZULI:'mining', ENCHANTED_LAPIS_LAZULI_BLOCK:'mining',
+        QUARTZ:'mining', ENCHANTED_QUARTZ:'mining', ENCHANTED_QUARTZ_BLOCK:'mining',
+        OBSIDIAN:'mining', ENCHANTED_OBSIDIAN:'mining', GLOWSTONE_DUST:'mining', ENCHANTED_GLOWSTONE_DUST:'mining', ENCHANTED_GLOWSTONE:'mining',
+        GRAVEL:'mining', FLINT:'mining', ENCHANTED_FLINT:'mining', SAND:'mining', ENCHANTED_SAND:'mining',
+        ICE:'mining', PACKED_ICE:'mining', ENCHANTED_ICE:'mining', ENCHANTED_PACKED_ICE:'mining',
+        SNOW_BALL:'mining', ENCHANTED_SNOW_BLOCK:'mining', CLAY_BALL:'mining', ENCHANTED_CLAY_BALL:'mining',
+        ENDER_STONE:'mining', ENCHANTED_ENDSTONE:'mining', NETHERRACK:'mining',
+        MITHRIL_ORE:'mining', ENCHANTED_MITHRIL:'mining', REFINED_MITHRIL:'mining',
+        TITANIUM_ORE:'mining', ENCHANTED_TITANIUM:'mining', REFINED_TITANIUM:'mining',
+        STARFALL:'mining', GEMSTONE_COLLECTION:'mining', PURE_MITHRIL:'mining', ROCK_GEMSTONE:'mining', PETRIFIED_STARFALL:'mining',
+        CONCENTRATED_STONE:'mining', ENCHANTED_RED_SAND:'mining', ENCHANTED_RED_SAND_CUBE:'mining', ENCHANTED_MYCELIUM:'mining', ENCHANTED_MYCELIUM_CUBE:'mining',
+        ENCHANTED_SULPHUR:'mining', ENCHANTED_SULPHUR_CUBE:'mining', SULPHURIC_COAL:'mining',
+        // Combat
+        ROTTEN_FLESH:'combat', ENCHANTED_ROTTEN_FLESH:'combat', BONE:'combat', ENCHANTED_BONE:'combat', ENCHANTED_BONE_BLOCK:'combat',
+        STRING:'combat', ENCHANTED_STRING:'combat', SPIDER_EYE:'combat', ENCHANTED_SPIDER_EYE:'combat', ENCHANTED_FERMENTED_SPIDER_EYE:'combat',
+        GUNPOWDER:'combat', ENCHANTED_GUNPOWDER:'combat', ENCHANTED_FIREWORK_ROCKET:'combat',
+        ENDER_PEARL:'combat', ENCHANTED_ENDER_PEARL:'combat', ENCHANTED_EYE_OF_ENDER:'combat', ABSOLUTE_ENDER_PEARL:'combat',
+        SLIME_BALL:'combat', ENCHANTED_SLIME_BALL:'combat', ENCHANTED_SLIME_BLOCK:'combat',
+        MAGMA_CREAM:'combat', ENCHANTED_MAGMA_CREAM:'combat', BLAZE_ROD:'combat', ENCHANTED_BLAZE_POWDER:'combat', ENCHANTED_BLAZE_ROD:'combat',
+        BLAZE_ASHES:'combat', CHILI_PEPPER:'combat',
+        REVENANT_FLESH:'combat', TARANTULA_WEB:'combat', WOLF_TOOTH:'combat', SOUL_FRAGMENT:'combat',
+        // Foraging
+        OAK_WOOD:'foraging', SPRUCE_WOOD:'foraging', BIRCH_WOOD:'foraging', DARK_OAK_WOOD:'foraging', ACACIA_WOOD:'foraging', JUNGLE_WOOD:'foraging',
+        ENCHANTED_OAK_WOOD:'foraging', ENCHANTED_SPRUCE_WOOD:'foraging', ENCHANTED_BIRCH_WOOD:'foraging', ENCHANTED_DARK_OAK_WOOD:'foraging', ENCHANTED_ACACIA_WOOD:'foraging', ENCHANTED_JUNGLE_WOOD:'foraging',
+        // Fishing
+        RAW_FISH:'fishing', 'RAW_FISH:1':'fishing', 'RAW_FISH:2':'fishing', 'RAW_FISH:3':'fishing', INK_SACK:'fishing',
+        ENCHANTED_RAW_FISH:'fishing', ENCHANTED_RAW_SALMON:'fishing', ENCHANTED_CLOWNFISH:'fishing', ENCHANTED_PUFFERFISH:'fishing',
+        ENCHANTED_COOKED_FISH:'fishing', ENCHANTED_COOKED_SALMON:'fishing',
+        LILY_PAD:'fishing', ENCHANTED_LILY_PAD:'fishing',
+        PRISMARINE_SHARD:'fishing', PRISMARINE_CRYSTALS:'fishing', ENCHANTED_PRISMARINE_SHARD:'fishing', ENCHANTED_PRISMARINE_CRYSTALS:'fishing',
+        SPONGE:'fishing', ENCHANTED_SPONGE:'fishing', ENCHANTED_WET_SPONGE:'fishing',
+        SHARK_FIN:'fishing', ENCHANTED_SHARK_FIN:'fishing', NURSE_SHARK_FIN:'fishing', BLUE_SHARK_FIN:'fishing', TIGER_SHARK_FIN:'fishing', GREAT_WHITE_SHARK_FIN:'fishing',
+        WHALE_BAIT:'fishing', FLYING_FISH:'fishing', SALMON_OPAL:'fishing',
+        // Oddities
+        BOOSTER_COOKIE:'oddities', GOD_POTION_2:'oddities', RECOMBOBULATOR_3000:'oddities',
+        HOT_POTATO_BOOK:'oddities', FUMING_POTATO_BOOK:'oddities',
+        BITS:'oddities', KAT_FLOWER:'oddities', STOCK_OF_STONKS:'oddities', NEW_YEAR_CAKE:'oddities',
+        JACOBS_TICKET:'oddities', GREEN_BANDANA:'oddities', POWER_CRYSTAL:'oddities',
+        ULTIMATE_CARROT_CANDY:'oddities', GREAT_CARROT_CANDY:'oddities', SIMPLE_CARROT_CANDY:'oddities',
+        SUPERBOOM_TNT:'oddities', INFINITE_QUIVER:'oddities',
+        HYPER_CATALYST:'oddities', CATALYST:'oddities', CRYSTAL_FRAGMENT:'oddities',
+        JUNGLE_KEY:'oddities', WITHER_CATALYST:'oddities', CORRUPT_SOIL:'oddities',
+        GOLDEN_TOOTH:'oddities', WEREWOLF_SKIN:'oddities', DARK_ORB:'oddities', PRECURSOR_GEAR:'oddities',
+        NULL_SPHERE:'oddities', NULL_ATOM:'oddities', NULL_OVOID:'oddities',
+        ENCHANTED_ANCIENT_CLAW:'oddities', WITHER_BLOOD:'oddities',
+        // Essence
+        CRIMSON_ESSENCE:'combat', UNDEAD_ESSENCE:'combat', DIAMOND_ESSENCE:'combat', GOLD_ESSENCE:'combat', DRAGON_ESSENCE:'combat', SPIDER_ESSENCE:'combat', WITHER_ESSENCE:'combat', ICE_ESSENCE:'combat',
+        // Power scrolls
+        RUBY_POWER_SCROLL:'oddities', SAPPHIRE_POWER_SCROLL:'oddities', JASPER_POWER_SCROLL:'oddities', AMETHYST_POWER_SCROLL:'oddities', AMBER_POWER_SCROLL:'oddities', OPAL_POWER_SCROLL:'oddities',
+        // Slayer drops
+        GOLDEN_POWDER:'oddities', JADERALD:'oddities', BEJEWELED_HANDLE:'oddities', POWER_SCROLL:'oddities',
+        // Misc
+        TREASURITE:'mining', GRIFFIN_FEATHER:'oddities', DAEDALUS_STICK:'oddities',
+        OIL_BARREL:'oddities', COMPACT_OOZE:'oddities', PLASMA:'oddities', VOLTA:'oddities', CORRUPTED_FRAGMENT:'oddities',
+        WORM_MEMBRANE:'oddities', KUUDRA_TEETH:'oddities', HEAVY_PEARL:'oddities',
+        SILENT_PEARL:'oddities', CRUX_TALISMAN:'oddities', METAPHORIC_EGG:'oddities',
+        GLOSSY_GEMSTONE:'mining', SORROW:'oddities', PLASMA_NUCLEUS:'oddities',
+        EXCEEDINGLY_RARE_ENDER_ARTIFACT_UPGRADER:'oddities', INFERNO_MINION_FUEL:'oddities',
+        'INK_SACK:2':'farming', 'INK_SACK:4':'mining',
+        ENCHANTED_BOOK_BUNDLE_BIG_BRAIN:'combat', ENCHANTED_BOOK_BUNDLE_COUNTER_STRIKE:'combat', ENCHANTED_BOOK_BUNDLE_VICIOUS:'combat',
+    };
+    if (catMap[id]) return catMap[id];
+    // Gemstones → mining
+    if (id.includes('_GEM')) return 'mining';
+    if (id.includes('PERFECT_') || id.includes('FLAWLESS_') || id.includes('FINE_') || id.includes('FLAWED_') || id.includes('ROUGH_')) return 'mining';
+    // Enchanted items: try stripping prefix
+    if (id.startsWith('ENCHANTED_')) {
+        const base = id.replace('ENCHANTED_', '');
+        return getCategory(base);
+    }
+    // Wood
+    if (id.includes('_WOOD')) return 'foraging';
+    // Fish-related
+    if (id.includes('FISH') || id.includes('SHARK') || id.includes('BAIT')) return 'fishing';
+    // Essence
+    if (id.includes('_ESSENCE')) return 'combat';
+    // Default
+    return 'oddities';
+}
+
+function updateCategoryCounts() {
+    const counts = {};
+    for (const item of allItems) {
+        const cat = getCategory(item.id);
+        counts[cat] = (counts[cat] || 0) + 1;
+    }
+    const total = allItems.length;
+    const bzBtns = document.querySelectorAll('#bazaarFilters .filter-btn');
+    bzBtns.forEach(btn => {
+        const cat = btn.dataset.filter;
+        if (cat === 'all') {
+            btn.textContent = 'all (' + total + ')';
+        } else if (cat === 'favorites') {
+            btn.textContent = 'watchlist (' + favorites.size + ')';
+        } else {
+            btn.textContent = cat + ' (' + (counts[cat] || 0) + ')';
+        }
+    });
+}
+
+// --- watchlist ---
+let favorites = new Set();
+try { favorites = new Set(JSON.parse(localStorage.getItem('bzFavorites') || '[]')); } catch(e) {}
+
+function saveFavorites() {
+    localStorage.setItem('bzFavorites', JSON.stringify([...favorites]));
+}
+
+function toggleFavorite(id) {
+    if (favorites.has(id)) {
+        favorites.delete(id);
+    } else {
+        favorites.add(id);
+    }
+    saveFavorites();
+    updateCategoryCounts();
+    renderAll();
+}
 
 // --- NPC prices (buy from NPC shop, sell on bazaar) ---
 const NPC_PRICES = {
@@ -648,6 +795,7 @@ async function fetchAuctionsPage(page) {
 }
 
 async function fetchAuctions() {
+    isScanning = true;
     statusEl.textContent = 'scanning';
     statusEl.className = 'status';
 
@@ -708,28 +856,114 @@ function renderBazaar(items) {
     bazaarBody.innerHTML = '';
 
     if (allItems.length === 0 && items.length === 0) {
-        bazaarBody.innerHTML = '<tr class="loading-row"><td colspan="6">loading…</td></tr>';
+        bazaarBody.innerHTML = '<tr class="loading-row"><td colspan="7">loading…</td></tr>';
+        itemCountEl.textContent = '0 items';
         return;
     }
 
     if (items.length === 0) {
-        bazaarBody.innerHTML = '<tr class="loading-row"><td colspan="6">no items found</td></tr>';
+        bazaarBody.innerHTML = '<tr class="loading-row"><td colspan="7">no items found</td></tr>';
+        itemCountEl.textContent = '0 items';
         return;
     }
 
-    for (const item of items) {
-        const tr = document.createElement('tr');
-        const spreadClass = item.spread >= 0 ? 'positive' : 'negative';
-        tr.innerHTML = `
-            <td>${escapeHtml(item.name)}</td>
-            <td class="num">${fmtCoins(item.buyPrice)}</td>
-            <td class="num">${fmtCoins(item.sellPrice)}</td>
-            <td class="num ${spreadClass}">${fmtCoins(item.spread)}</td>
-            <td class="num ${spreadClass}">${item.spreadPct.toFixed(1)}%</td>
-            <td class="num">${fmtNum(item.totalVolume)}</td>
-        `;
-        bazaarBody.appendChild(tr);
+    // Separate favorites and filter by category
+    let displayItems = items;
+    if (currentBazaarCategory !== 'all' && currentBazaarCategory !== 'favorites') {
+        displayItems = items.filter(i => getCategory(i.id) === currentBazaarCategory);
     }
+
+    const favItems = currentBazaarCategory === 'favorites'
+        ? displayItems.filter(i => favorites.has(i.id))
+        : displayItems.filter(i => favorites.has(i.id));
+    const restItems = currentBazaarCategory === 'favorites'
+        ? []
+        : displayItems.filter(i => !favorites.has(i.id));
+
+    // Group rest by category if showing all
+    const grouped = {};
+    if (currentBazaarCategory === 'all') {
+        for (const item of restItems) {
+            const cat = getCategory(item.id);
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(item);
+        }
+    }
+
+    let renderedCount = 0;
+    const catOrder = ['farming', 'mining', 'combat', 'foraging', 'fishing', 'oddities'];
+
+    // Render favorites first
+    if (favItems.length > 0) {
+        const groupRow = document.createElement('tr');
+        groupRow.className = 'cat-header';
+        groupRow.innerHTML = `<td colspan="7">favorites (${favItems.length})</td>`;
+        bazaarBody.appendChild(groupRow);
+        for (const item of favItems) {
+            bazaarBody.appendChild(createItemRow(item));
+            renderedCount++;
+        }
+    }
+
+    if (currentBazaarCategory === 'all') {
+        // Render by category groups
+        for (const cat of catOrder) {
+            const catItems = grouped[cat];
+            if (!catItems || catItems.length === 0) continue;
+            const groupRow = document.createElement('tr');
+            groupRow.className = 'cat-header';
+            groupRow.innerHTML = `<td colspan="7">${cat} (${catItems.length})</td>`;
+            bazaarBody.appendChild(groupRow);
+            for (const item of catItems) {
+                bazaarBody.appendChild(createItemRow(item));
+                renderedCount++;
+            }
+        }
+    } else if (currentBazaarCategory === 'favorites') {
+        if (favItems.length === 0) {
+            bazaarBody.innerHTML = '<tr class="loading-row"><td colspan="7">no favorites yet — click ★ to bookmark items</td></tr>';
+        }
+    } else {
+        // Single category filter
+        for (const item of restItems) {
+            bazaarBody.appendChild(createItemRow(item));
+            renderedCount++;
+        }
+    }
+
+    // Update count
+    if (currentBazaarCategory === 'favorites') {
+        itemCountEl.textContent = favItems.length + ' items';
+    } else {
+        itemCountEl.textContent = (favItems.length + renderedCount) + ' items';
+    }
+}
+
+function createItemRow(item) {
+    const tr = document.createElement('tr');
+    const spreadClass = item.spread >= 0 ? 'positive' : 'negative';
+    const isFav = favorites.has(item.id);
+    tr.dataset.id = item.id;
+    tr.innerHTML = `
+        <td class="fav-cell"><button class="fav-btn ${isFav ? 'favd' : ''}" data-id="${escapeHtml(item.id)}" title="${isFav ? 'remove from watchlist' : 'add to watchlist'}">${isFav ? '★' : '☆'}</button></td>
+        <td>${escapeHtml(item.name)}<button class="alert-row-btn" title="set price alert">🔔</button></td>
+        <td class="num">${fmtCoins(item.buyPrice)}</td>
+        <td class="num">${fmtCoins(item.sellPrice)}</td>
+        <td class="num ${spreadClass}">${fmtCoins(item.spread)}</td>
+        <td class="num ${spreadClass}">${item.spreadPct.toFixed(1)}%</td>
+        <td class="num">${fmtNum(item.totalVolume)}</td>
+    `;
+    // Star click handler
+    tr.querySelector('.fav-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFavorite(item.id);
+    });
+    // Alert click handler
+    tr.querySelector('.alert-row-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        addAlert(item.id, item.name);
+    });
+    return tr;
 }
 
 function renderMethods(items) {
@@ -1052,7 +1286,7 @@ function renderAll() {
 
     if (currentView === 'bazaar') {
         renderBazaar(filtered);
-        itemCountEl.textContent = filtered.length + ' items';
+        // renderBazaar handles the count internally now
     } else if (currentView === 'methods') {
         renderMethods(allItems);
         itemCountEl.textContent = allItems.length + ' items';
@@ -1118,11 +1352,12 @@ function escapeHtml(str) {
 }
 
 // --- guide filters ---
-const filterBtns = document.querySelectorAll('.filter-btn');
-filterBtns.forEach(btn => {
+// --- guide filters ---
+const guideFilterBtns = document.querySelectorAll('#guideFilters .filter-btn');
+guideFilterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         currentGuideFilter = btn.dataset.filter;
-        filterBtns.forEach(b => b.classList.remove('active'));
+        guideFilterBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderGuides();
         const shown = currentGuideFilter === 'all' ? GUIDES.length : GUIDES.filter(g => g.category === currentGuideFilter).length;
@@ -1130,9 +1365,21 @@ filterBtns.forEach(btn => {
     });
 });
 
+// --- bazaar category filters ---
+const bzFilterBtns = document.querySelectorAll('#bazaarFilters .filter-btn');
+bzFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentBazaarCategory = btn.dataset.filter;
+        bzFilterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderAll();
+    });
+});
+
 // --- auctions ---
 let auctionSnipes = [];
 let auctionsLoaded = false;
+let isScanning = false;
 
 async function loadAuctions() {
     if (allItems.length === 0) {
@@ -1285,6 +1532,7 @@ async function loadAuctions() {
 
     renderAuctionsTable();
 
+    isScanning = false;
     statusEl.textContent = 'live';
     statusEl.className = 'status live';
 }
@@ -1309,6 +1557,137 @@ function renderAuctionsTable() {
         `;
         auctionsBody.appendChild(tr);
     }
+}
+
+// --- price alerts ---
+let alerts = [];
+try { alerts = JSON.parse(localStorage.getItem('bzAlerts') || '[]'); } catch(e) {}
+
+function saveAlerts() {
+    localStorage.setItem('bzAlerts', JSON.stringify(alerts));
+}
+
+function checkAlerts() {
+    if (alerts.length === 0) return [];
+    const triggered = [];
+    const bzById = {};
+    for (const item of allItems) bzById[item.id] = item;
+
+    for (const alert of alerts) {
+        const item = bzById[alert.id];
+        if (!item) continue;
+        const price = alert.direction === 'below' ? item.buyPrice : item.sellPrice;
+        if (price <= alert.threshold) {
+            triggered.push({ ...alert, currentPrice: price });
+        }
+    }
+    return triggered;
+}
+
+function updateAlertBadge() {
+    const badge = document.getElementById('alertBadge');
+    if (!badge) return;
+    const triggered = checkAlerts();
+    badge.textContent = triggered.length || '';
+    badge.className = 'alert-badge' + (triggered.length > 0 ? ' active' : '');
+    badge.title = triggered.length > 0 ? triggered.map(t => t.name + ': ' + fmtCoins(t.currentPrice)).join('\n') : 'no alerts triggered';
+}
+
+function addAlert(id, name) {
+    // Remove existing alert for this item if any
+    alerts = alerts.filter(a => a.id !== id);
+
+    const threshold = prompt('Set price alert for ' + name + '\nGet notified when price drops below:', '');
+    if (!threshold || isNaN(parseFloat(threshold))) return;
+
+    alerts.push({
+        id,
+        name,
+        threshold: parseFloat(threshold),
+        direction: 'below',
+    });
+    saveAlerts();
+    updateAlertBadge();
+    renderAll();
+}
+
+function removeAlert(id) {
+    alerts = alerts.filter(a => a.id !== id);
+    saveAlerts();
+    updateAlertBadge();
+    renderAll();
+}
+
+function renderAlertModal() {
+    const panel = document.getElementById('alertPanel');
+    const list = document.getElementById('alertList');
+    if (!panel || !list) return;
+
+    if (alerts.length === 0) {
+        list.innerHTML = '<div class="alert-empty">no alerts set</div>';
+    } else {
+        const bzById = {};
+        for (const item of allItems) bzById[item.id] = item;
+
+        list.innerHTML = alerts.map(a => {
+            const item = bzById[a.id];
+            const current = item ? fmtCoins(item.buyPrice) : '—';
+            const triggered = item && item.buyPrice <= a.threshold;
+            return `
+                <div class="alert-item ${triggered ? 'triggered' : ''}">
+                    <span class="alert-name">${escapeHtml(a.name)}</span>
+                    <span class="alert-detail">below ${fmtCoins(a.threshold)} · now ${current}</span>
+                    <button class="alert-remove" data-id="${escapeHtml(a.id)}" title="remove">×</button>
+                </div>
+            `;
+        }).join('');
+
+        // Attach remove handlers
+        list.querySelectorAll('.alert-remove').forEach(btn => {
+            btn.addEventListener('click', () => removeAlert(btn.dataset.id));
+        });
+    }
+
+    panel.classList.toggle('open');
+}
+
+// --- profit calculator ---
+function calcBestFlip() {
+    const budgetInput = document.getElementById('calcBudget');
+    const resultEl = document.getElementById('calcResult');
+    if (!budgetInput || !resultEl) return;
+
+    const budget = parseFloat(budgetInput.value);
+    if (!budget || budget <= 0) {
+        resultEl.innerHTML = '<span class="calc-hint">enter your coin balance</span>';
+        return;
+    }
+
+    let best = null;
+    for (const item of allItems) {
+        if (item.spread <= 0 || item.buyPrice <= 0 || item.buyVolume <= 0 || item.sellVolume <= 0) continue;
+        const qty = Math.floor(budget / item.buyPrice);
+        if (qty < 1) continue;
+        const profitPerItem = item.spread * 0.99;
+        const totalProfit = profitPerItem * qty;
+        if (!best || totalProfit > best.totalProfit) {
+            best = { item, qty, profitPerItem, totalProfit };
+        }
+    }
+
+    if (!best) {
+        resultEl.innerHTML = '<span class="calc-hint">no profitable flips found</span>';
+        return;
+    }
+
+    resultEl.innerHTML = `
+        <div class="calc-best">
+            <span class="calc-item">${escapeHtml(best.item.name)}</span>
+            <span class="calc-meta">buy ${best.qty} × ${fmtCoinsFull(best.item.buyPrice)}</span>
+            <span class="calc-meta">sell ${best.qty} × ${fmtCoinsFull(best.item.sellPrice)}</span>
+            <span class="calc-profit">+${fmtCoinsFull(best.totalProfit)} coins</span>
+        </div>
+    `;
 }
 
 // --- theme ---
@@ -1361,11 +1740,20 @@ setTheme(getTheme());
 
 // --- main ---
 let lastFetchTime = 0;
+let nextRefreshTime = 0;
 let autoRefreshTimer = null;
+const AUTO_REFRESH_SECS = 20;
 
 async function loadData() {
     const data = await fetchBazaar();
-    if (!data) return;
+    if (!data) {
+        // Retry sooner on failure
+        if (autoRefreshTimer) clearTimeout(autoRefreshTimer);
+        nextRefreshTime = Date.now() + 15000;
+        updateCountdown();
+        autoRefreshTimer = setTimeout(loadData, 15000);
+        return;
+    }
 
     allItems = processBazaar(data);
     auctionsLoaded = false;
@@ -1375,8 +1763,11 @@ async function loadData() {
     statusEl.className = 'status ok';
     lastUpdatedEl.textContent = timeAgo(lastFetchTime);
     if (!timeUpdateInterval) startTimeUpdate();
+    updateCategoryCounts();
+    updateAlertBadge();
     renderAll();
     if (currentView === 'auctions') loadAuctions();
+    resetAutoRefresh();
 }
 
 let timeUpdateInterval = null;
@@ -1387,12 +1778,37 @@ function startTimeUpdate() {
         if (lastFetchTime > 0) {
             lastUpdatedEl.textContent = timeAgo(lastFetchTime);
         }
-    }, 5000);
+        updateCountdown();
+    }, 1000);
+}
+
+function resetAutoRefresh() {
+    if (autoRefreshTimer) clearTimeout(autoRefreshTimer);
+    nextRefreshTime = Date.now() + AUTO_REFRESH_SECS * 1000;
+    updateCountdown();
+    autoRefreshTimer = setTimeout(() => {
+        // Don't refresh during active auction scanning
+        if (isScanning) {
+            resetAutoRefresh();
+            return;
+        }
+        loadData();
+    }, AUTO_REFRESH_SECS * 1000);
+}
+
+function updateCountdown() {
+    const refCountEl = document.getElementById('refreshCountdown');
+    if (!refCountEl) return;
+    const remaining = Math.max(0, Math.ceil((nextRefreshTime - Date.now()) / 1000));
+    if (remaining <= 0) {
+        refCountEl.textContent = 'auto';
+    } else {
+        refCountEl.textContent = remaining + 's';
+    }
 }
 
 // initial load + auto-refresh
 loadData();
-autoRefreshTimer = setInterval(loadData, 30000);
 
 // initial sort indicator
 ths.forEach(th => {

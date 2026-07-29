@@ -1,9 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bazaar</title>
+    <script>
+        // prevent theme flash — set data-theme before first paint
+        (function() {
+            var t = localStorage.getItem('theme');
+            if (t && ['dark','light','warm','skyblock'].indexOf(t) !== -1) {
+                document.documentElement.setAttribute('data-theme', t);
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,6 +23,18 @@
         </div>
         <div class="header-right">
             <span class="last-updated" id="lastUpdated">—</span>
+            <div class="theme-switcher">
+                <button id="themeBtn" class="btn theme-btn" title="theme">
+                    <span id="themeIcon">◐</span>
+                    <span class="label" id="themeLabel">dark</span>
+                </button>
+                <div id="themeDropdown" class="theme-dropdown">
+                    <button class="theme-option" data-theme="dark">dark</button>
+                    <button class="theme-option" data-theme="light">light</button>
+                    <button class="theme-option" data-theme="warm">warm</button>
+                    <button class="theme-option" data-theme="skyblock">skyblock</button>
+                </div>
+            </div>
             <button id="refreshBtn" class="btn" title="refresh">↻</button>
         </div>
     </header>
@@ -29,20 +50,24 @@
     <main>
         <!-- Bazaar Table View -->
         <section id="bazaarView" class="view active">
+            <div class="section-intro">
+                <p>live prices from the hypixel bazaar &mdash; click any column header to sort</p>
+                <p class="section-hint"><span class="dot-positive"></span> profit &nbsp; <span class="dot-negative"></span> loss &nbsp; (after order flipping)</p>
+            </div>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th class="sortable" data-sort="name">item <span class="arrow"></span></th>
-                            <th class="sortable" data-sort="buyPrice">buy <span class="arrow"></span></th>
-                            <th class="sortable" data-sort="sellPrice">sell <span class="arrow"></span></th>
-                            <th class="sortable" data-sort="spread">spread <span class="arrow"></span></th>
-                            <th class="sortable" data-sort="spreadPct">% <span class="arrow"></span></th>
-                            <th class="sortable" data-sort="buyVolume">vol <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="buyPrice" title="price you get if you sell now">sell now <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="sellPrice" title="price you pay if you buy now">buy now <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="spread" title="profit per item from placing orders">margin <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="spreadPct" title="return on investment">roi <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="buyVolume" title="number of active buy + sell orders">volume <span class="arrow"></span></th>
                         </tr>
                     </thead>
                     <tbody id="bazaarBody">
-                        <tr class="loading-row"><td colspan="6">loading…</td></tr>
+                        <tr class="loading-row"><td colspan="6">loading&hellip;</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -50,43 +75,46 @@
 
         <!-- Money Making Methods View -->
         <section id="methodsView" class="view">
+            <div class="section-intro">
+                <p>money-making strategies using bazaar data</p>
+            </div>
             <div class="methods-grid">
                 <div class="method-card" id="flipMethods">
-                    <h3>bazaar flips</h3>
-                    <p class="method-desc">buy order → sell offer spread</p>
+                    <h3>order flipping</h3>
+                    <p class="method-desc">place a buy order, wait for it to fill, then place a sell offer. profit shown after 1% bazaar tax.</p>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th>item</th>
-                                    <th>buy at</th>
-                                    <th>sell at</th>
-                                    <th>profit</th>
-                                    <th>margin</th>
+                                    <th>buy order at</th>
+                                    <th>sell offer at</th>
+                                    <th>profit / ea</th>
+                                    <th>roi</th>
                                 </tr>
                             </thead>
                             <tbody id="flipBody">
-                                <tr class="loading-row"><td colspan="5">loading…</td></tr>
+                                <tr class="loading-row"><td colspan="5">loading&hellip;</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div class="method-card">
-                    <h3>volume leaders</h3>
-                    <p class="method-desc">highest 7-day trade volume</p>
+                    <h3>volume trading</h3>
+                    <p class="method-desc">items with the highest weekly trade volume &mdash; good for bulk order flipping where profit adds up fast</p>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th>item</th>
-                                    <th>price</th>
-                                    <th>weekly vol</th>
-                                    <th>est. daily coins</th>
+                                    <th>avg price</th>
+                                    <th>sold / week</th>
+                                    <th>coins / day</th>
                                 </tr>
                             </thead>
                             <tbody id="volumeBody">
-                                <tr class="loading-row"><td colspan="4">loading…</td></tr>
+                                <tr class="loading-row"><td colspan="4">loading&hellip;</td></tr>
                             </tbody>
                         </table>
                     </div>

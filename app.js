@@ -618,6 +618,53 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
+// --- theme ---
+const themeBtn = document.getElementById('themeBtn');
+const themeDropdown = document.getElementById('themeDropdown');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+const themeOptions = document.querySelectorAll('.theme-option');
+
+const THEME_ICONS = { dark: '◐', light: '○', warm: '◒', skyblock: '◆' };
+
+function getTheme() {
+    const stored = localStorage.getItem('theme');
+    if (stored && THEMES.includes(stored)) return stored;
+    return 'dark';
+}
+
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    themeLabel.textContent = theme;
+    themeIcon.textContent = THEME_ICONS[theme] || '◐';
+
+    // update dropdown active states
+    themeOptions.forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.theme === theme);
+    });
+}
+
+themeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    themeDropdown.classList.toggle('open');
+});
+
+themeOptions.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setTheme(opt.dataset.theme);
+        themeDropdown.classList.remove('open');
+    });
+});
+
+document.addEventListener('click', () => {
+    themeDropdown.classList.remove('open');
+});
+
+// init theme
+setTheme(getTheme());
+
 // --- main ---
 let lastFetchTime = 0;
 let autoRefreshTimer = null;

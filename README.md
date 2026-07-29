@@ -1,36 +1,62 @@
-# skyblock bazaar
+# SkyBlock Bazaar
 
-A minimal, functional Hypixel SkyBlock bazaar tracker and money-making method finder. No frameworks, no build step — just open `index.html`.
+Live Hypixel SkyBlock bazaar price tracker with integrated money-making calculators.
 
-### features
+![screenshot](screenshot.png)
 
-- **live bazaar prices** — fetches real-time data from the Hypixel Public API every 30 seconds
-- **sortable table** — click any column header to sort by item name, buy price, sell price, spread, margin %, or volume
-- **search filtering** — filter items by name
-- **money-making methods** — two built-in strategies:
-  - **bazaar flips** — top 15 order-flip opportunities (place buy order → place sell offer), with 1% bazaar tax accounted for
-  - **volume leaders** — top 15 items by 7-day trade volume with estimated daily coin flow
-- **responsive** — works on desktop and mobile
-- **no API key required** — uses the public `/v2/skyblock/bazaar` endpoint
+## Features
 
-### usage
+**Bazaar tracker** — real-time prices for all bazaar items in a sortable, filterable table. Data refreshes every 30 seconds from the public Hypixel API.
 
-Open `index.html` in any browser. That's it.
+**Money-making methods** — four automated strategies derived from live bazaar data:
 
-### deploy on github pages
+- **Order flipping** — top items by buy order → sell offer spread, with 1% tax accounted for
+- **NPC flipping** — items profitable to buy from NPC shops and instant-sell on the bazaar
+- **Craft flipping** — recipes where buying materials and crafting yields profit after instant-selling
+- **Volume trading** — highest 7-day trade volume items for bulk strategies
 
-1. Push this repo to GitHub.
-2. Go to **Settings → Pages**.
-3. Under **Source**, select **Deploy from a branch**.
-4. Choose `main` (or your default branch) and `/ (root)` as the folder.
-5. Click **Save**. Your site will be live at `https://<username>.github.io/<repo>/`.
+**Minion calculator** — estimated coins per day for 39 minions at T11, ranked by current bazaar prices. Assumes instant-selling via enchanted hopper.
 
-No build step or framework needed — the project is pure HTML, CSS, and JavaScript.
+**Guides** — curated strategy guides filterable by difficulty (beginner, intermediate, advanced).
 
-### api
+**Custom themes** — dark, light, warm, and SkyBlock variants with localStorage persistence.
 
-Data comes from the [Hypixel Public API](https://api.hypixel.net/) — specifically `https://api.hypixel.net/v2/skyblock/bazaar`. No authentication required.
+## Usage
 
-### license
+Open `index.html` in a browser. No build step, no dependencies, no API key required.
+
+```
+git clone https://github.com/<user>/<repo>.git
+cd <repo>
+open index.html
+```
+
+## API
+
+All data from the [Hypixel Public API](https://api.hypixel.net/):
+
+| Endpoint | Auth |
+|---|---|
+| `/v2/skyblock/bazaar` | none |
+
+## Deploy
+
+Works on any static host. For GitHub Pages:
+
+1. Push to GitHub
+2. Settings → Pages → Source: **Deploy from a branch**
+3. Select branch and root folder, save
+
+## Structure
+
+```
+.
+├── index.html    # markup
+├── styles.css    # 4-theme stylesheet
+├── app.js        # bazaar fetch, calculators, guides, theme switcher
+└── README.md
+```
+
+## License
 
 MIT

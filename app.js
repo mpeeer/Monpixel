@@ -367,14 +367,14 @@ const NPC_PRICES = {
     'ICE': 1,
     'PACKED_ICE': 9,
     'GOLD_INGOT': 4,
-    'IRON_INGOT': 5,
+    'IRON_INGOT': 3,
     'COAL': 2,
     'DIAMOND': 8,
-    'EMERALD': 5,
-    'REDSTONE': 2,
-    'LAPIS_LAZULI': 2,
+    'EMERALD': 6,
+    'REDSTONE': 1,
+    'LAPIS_LAZULI': 1,
     'SAND': 2,
-    'GRAVEL': 4,
+    'GRAVEL': 3,
     'FLINT': 4,
     'OBSIDIAN': 24,
     'ROTTEN_FLESH': 2,
@@ -389,12 +389,12 @@ const NPC_PRICES = {
     'CLAY_BALL': 3,
     'LILY_PAD': 10,
     'RAW_FISH': 6,
-    'RAW_FISH:1': 10,
+    'RAW_FISH:1': 5,
     'RAW_FISH:3': 15,
     'PRISMARINE_SHARD': 5,
     'PRISMARINE_CRYSTALS': 5,
-    'SPONGE': 80,
-    'NETHER_STALK': 10,
+    'SPONGE': 50,
+    'NETHER_STALK': 3,
 };
 
 // --- craft recipes (output: { material_id: quantity }) ---
@@ -458,43 +458,101 @@ const CRAFT_RECIPES = [
 const MINION_DATA = [
     { name: 'Snow', item: 'SNOW_BALL', secs: 6.5, per: 4 },
     { name: 'Clay', item: 'CLAY_BALL', secs: 16, per: 4 },
-    { name: 'Slime', item: 'SLIME_BALL', secs: 12, per: 1 },
+    { name: 'Slime', item: 'SLIME_BALL', secs: 13, per: 1 },
     { name: 'Magma Cube', item: 'MAGMA_CREAM', secs: 18, per: 1 },
-    { name: 'Blaze', item: 'BLAZE_ROD', secs: 15, per: 1 },
-    { name: 'Enderman', item: 'ENDER_PEARL', secs: 18, per: 1 },
+    { name: 'Blaze', item: 'BLAZE_ROD', secs: 17, per: 1 },
+    { name: 'Enderman', item: 'ENDER_PEARL', secs: 20, per: 1 },
     { name: 'Iron', item: 'IRON_INGOT', secs: 8, per: 1 },
-    { name: 'Gold', item: 'GOLD_INGOT', secs: 11, per: 1 },
-    { name: 'Diamond', item: 'DIAMOND', secs: 15, per: 1 },
-    { name: 'Emerald', item: 'EMERALD', secs: 14, per: 1 },
+    { name: 'Gold', item: 'GOLD_INGOT', secs: 10, per: 1 },
+    { name: 'Diamond', item: 'DIAMOND', secs: 13, per: 1 },
+    { name: 'Emerald', item: 'EMERALD', secs: 13, per: 1 },
     { name: 'Coal', item: 'COAL', secs: 7, per: 1 },
     { name: 'Redstone', item: 'REDSTONE', secs: 18, per: 4 },
     { name: 'Lapis', item: 'LAPIS_LAZULI', secs: 18, per: 4 },
-    { name: 'Quartz', item: 'QUARTZ', secs: 13, per: 1 },
+    { name: 'Quartz', item: 'QUARTZ', secs: 11.5, per: 1 },
     { name: 'Obsidian', item: 'OBSIDIAN', secs: 24, per: 1 },
-    { name: 'Glowstone', item: 'GLOWSTONE_DUST', secs: 13, per: 1 },
-    { name: 'Gravel', item: 'GRAVEL', secs: 12, per: 1 },
+    { name: 'Glowstone', item: 'GLOWSTONE_DUST', secs: 12, per: 4 },
+    { name: 'Gravel', item: 'GRAVEL', secs: 14, per: 1 },
     { name: 'Ice', item: 'ICE', secs: 7, per: 1 },
-    { name: 'Sand', item: 'SAND', secs: 12, per: 1 },
+    { name: 'Sand', item: 'SAND', secs: 14, per: 1 },
     { name: 'Stone', item: 'COBBLESTONE', secs: 7, per: 1 },
-    { name: 'Wheat', item: 'WHEAT', secs: 10, per: 1 },
-    { name: 'Carrot', item: 'CARROT_ITEM', secs: 10, per: 1 },
-    { name: 'Potato', item: 'POTATO_ITEM', secs: 10, per: 1 },
-    { name: 'Pumpkin', item: 'PUMPKIN', secs: 16, per: 1 },
-    { name: 'Melon', item: 'MELON', secs: 13, per: 4 },
-    { name: 'Cactus', item: 'CACTUS', secs: 12, per: 1 },
-    { name: 'Sugar Cane', item: 'SUGAR_CANE', secs: 12, per: 1 },
-    { name: 'Nether Wart', item: 'NETHER_STALK', secs: 10, per: 1 },
-    { name: 'Cow', item: 'RAW_BEEF', secs: 13, per: 1 },
-    { name: 'Pig', item: 'PORK', secs: 13, per: 1 },
-    { name: 'Chicken', item: 'RAW_CHICKEN', secs: 15, per: 1 },
-    { name: 'Sheep', item: 'MUTTON', secs: 12, per: 1 },
-    { name: 'Rabbit', item: 'RABBIT_HIDE', secs: 12, per: 1 },
-    { name: 'Zombie', item: 'ROTTEN_FLESH', secs: 13, per: 1 },
-    { name: 'Skeleton', item: 'BONE', secs: 13, per: 1 },
-    { name: 'Spider', item: 'STRING', secs: 10, per: 1 },
-    { name: 'Cave Spider', item: 'SPIDER_EYE', secs: 10, per: 1 },
-    { name: 'Creeper', item: 'GUNPOWDER', secs: 14, per: 1 },
-    { name: 'Mithril', item: 'MITHRIL_ORE', secs: 40, per: 1 },
+    { name: 'Wheat', item: 'WHEAT', secs: 8, per: 1 },
+    { name: 'Carrot', item: 'CARROT_ITEM', secs: 9, per: 1 },
+    { name: 'Potato', item: 'POTATO_ITEM', secs: 9, per: 1 },
+    { name: 'Pumpkin', item: 'PUMPKIN', secs: 14, per: 1 },
+    { name: 'Melon', item: 'MELON', secs: 11, per: 1 },
+    { name: 'Cactus', item: 'CACTUS', secs: 13, per: 1 },
+    { name: 'Sugar Cane', item: 'SUGAR_CANE', secs: 10, per: 1 },
+    { name: 'Nether Wart', item: 'NETHER_STALK', secs: 30, per: 3 },
+    { name: 'Cow', item: 'RAW_BEEF', secs: 11, per: 1 },
+    { name: 'Pig', item: 'PORK', secs: 11, per: 1 },
+    { name: 'Chicken', item: 'RAW_CHICKEN', secs: 13, per: 1 },
+    { name: 'Sheep', item: 'MUTTON', secs: 10, per: 1 },
+    { name: 'Rabbit', item: 'RABBIT_HIDE', secs: 11, per: 1 },
+    { name: 'Zombie', item: 'ROTTEN_FLESH', secs: 14, per: 1 },
+    { name: 'Skeleton', item: 'BONE', secs: 14, per: 1 },
+    { name: 'Spider', item: 'STRING', secs: 14, per: 1 },
+    { name: 'Cave Spider', item: 'SPIDER_EYE', secs: 14, per: 1 },
+    { name: 'Creeper', item: 'GUNPOWDER', secs: 15, per: 1 },
+    { name: 'Mithril', item: 'MITHRIL_ORE', secs: 55, per: 1 },
+];
+
+// --- fuse recipes (gemstone upgrading, enchanted blocks, forge) ---
+const FUSE_RECIPES = [
+    // Gemstone fusing (80:1 ratio at Gemstone Grinder)
+    { output: 'FINE_RUBY_GEM',        materials: { FLAWED_RUBY_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_RUBY_GEM',    materials: { FINE_RUBY_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_RUBY_GEM',     materials: { FLAWLESS_RUBY_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_AMETHYST_GEM',    materials: { FLAWED_AMETHYST_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_AMETHYST_GEM',materials: { FINE_AMETHYST_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_AMETHYST_GEM', materials: { FLAWLESS_AMETHYST_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_JADE_GEM',        materials: { FLAWED_JADE_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_JADE_GEM',    materials: { FINE_JADE_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_JADE_GEM',     materials: { FLAWLESS_JADE_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_SAPPHIRE_GEM',    materials: { FLAWED_SAPPHIRE_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_SAPPHIRE_GEM',materials: { FINE_SAPPHIRE_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_SAPPHIRE_GEM', materials: { FLAWLESS_SAPPHIRE_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_AMBER_GEM',       materials: { FLAWED_AMBER_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_AMBER_GEM',   materials: { FINE_AMBER_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_AMBER_GEM',    materials: { FLAWLESS_AMBER_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_TOPAZ_GEM',       materials: { FLAWED_TOPAZ_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_TOPAZ_GEM',   materials: { FINE_TOPAZ_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_TOPAZ_GEM',    materials: { FLAWLESS_TOPAZ_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_JASPER_GEM',      materials: { FLAWED_JASPER_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_JASPER_GEM',  materials: { FINE_JASPER_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_JASPER_GEM',   materials: { FLAWLESS_JASPER_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_OPAL_GEM',        materials: { FLAWED_OPAL_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_OPAL_GEM',    materials: { FINE_OPAL_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_OPAL_GEM',     materials: { FLAWLESS_OPAL_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_PERIDOT_GEM',     materials: { FLAWED_PERIDOT_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_PERIDOT_GEM', materials: { FINE_PERIDOT_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_PERIDOT_GEM',  materials: { FLAWLESS_PERIDOT_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_CITRINE_GEM',     materials: { FLAWED_CITRINE_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_CITRINE_GEM', materials: { FINE_CITRINE_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_CITRINE_GEM',  materials: { FLAWLESS_CITRINE_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_ONYX_GEM',        materials: { FLAWED_ONYX_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_ONYX_GEM',    materials: { FINE_ONYX_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_ONYX_GEM',     materials: { FLAWLESS_ONYX_GEM: 80 }, type: 'gem' },
+    { output: 'FINE_AQUAMARINE_GEM',  materials: { FLAWED_AQUAMARINE_GEM: 80 }, type: 'gem' },
+    { output: 'FLAWLESS_AQUAMARINE_GEM',materials: { FINE_AQUAMARINE_GEM: 80 }, type: 'gem' },
+    { output: 'PERFECT_AQUAMARINE_GEM',materials: { FLAWLESS_AQUAMARINE_GEM: 80 }, type: 'gem' },
+    // Enchanted blocks (160:1)
+    { output: 'ENCHANTED_BONE_BLOCK',       materials: { ENCHANTED_BONE: 160 }, type: 'block' },
+    { output: 'ENCHANTED_EMERALD_BLOCK',    materials: { ENCHANTED_EMERALD: 160 }, type: 'block' },
+    { output: 'ENCHANTED_QUARTZ_BLOCK',     materials: { ENCHANTED_QUARTZ: 160 }, type: 'block' },
+    { output: 'ENCHANTED_REDSTONE_BLOCK',   materials: { ENCHANTED_REDSTONE: 160 }, type: 'block' },
+    { output: 'ENCHANTED_LAPIS_LAZULI_BLOCK', materials: { ENCHANTED_LAPIS_LAZULI: 160 }, type: 'block' },
+    { output: 'ENCHANTED_DIAMOND_BLOCK',    materials: { ENCHANTED_DIAMOND: 160 }, type: 'block' },
+    { output: 'ENCHANTED_GLOWSTONE',        materials: { ENCHANTED_GLOWSTONE_DUST: 160 }, type: 'block' },
+    { output: 'ENCHANTED_COAL_BLOCK',       materials: { ENCHANTED_COAL: 160 }, type: 'block' },
+    { output: 'ENCHANTED_IRON_BLOCK',       materials: { ENCHANTED_IRON: 160 }, type: 'block' },
+    { output: 'ENCHANTED_GOLD_BLOCK',       materials: { ENCHANTED_GOLD: 160 }, type: 'block' },
+    { output: 'ENCHANTED_SLIME_BLOCK',      materials: { ENCHANTED_SLIME_BALL: 160 }, type: 'block' },
+    { output: 'ENCHANTED_SNOW_BLOCK',       materials: { SNOW_BALL: 640 }, type: 'block' },
+    { output: 'ENCHANTED_PACKED_ICE',       materials: { ENCHANTED_ICE: 160 }, type: 'block' },
+    // Forge recipes (forge time not included in profit calc)
+    { output: 'REFINED_MITHRIL',   materials: { ENCHANTED_MITHRIL: 160 }, type: 'forge' },
+    { output: 'REFINED_TITANIUM',  materials: { ENCHANTED_TITANIUM: 160 }, type: 'forge' },
 ];
 
 // --- DOM refs ---
@@ -505,6 +563,7 @@ const npcBody = document.getElementById('npcBody');
 const craftBody = document.getElementById('craftBody');
 const minionBody = document.getElementById('minionBody');
 const guidesContainer = document.getElementById('guidesContainer');
+const fuseBody = document.getElementById('fuseBody');
 const searchInput = document.getElementById('searchInput');
 const statusEl = document.getElementById('status');
 const lastUpdatedEl = document.getElementById('lastUpdated');
@@ -514,6 +573,7 @@ const bazaarView = document.getElementById('bazaarView');
 const methodsView = document.getElementById('methodsView');
 const minionView = document.getElementById('minionView');
 const guidesView = document.getElementById('guidesView');
+const fuseView = document.getElementById('fuseView');
 const tabs = document.querySelectorAll('.tab');
 const ths = document.querySelectorAll('thead th.sortable');
 
@@ -823,6 +883,60 @@ function renderGuides() {
     }
 }
 
+// --- fusing ---
+function renderFusing(items) {
+    const itemsById = {};
+    for (const item of items) itemsById[item.id] = item;
+
+    const results = [];
+    for (const recipe of FUSE_RECIPES) {
+        const outputItem = itemsById[recipe.output];
+        if (!outputItem || outputItem.buyPrice <= 0) continue;
+
+        let materialCost = 0;
+        let missing = false;
+        for (const [matId, qty] of Object.entries(recipe.materials)) {
+            const matItem = itemsById[matId];
+            if (!matItem || matItem.sellPrice <= 0) { missing = true; break; }
+            materialCost += matItem.sellPrice * qty;
+        }
+        if (missing) continue;
+
+        const revenue = outputItem.buyPrice * 0.99;
+        const profit = revenue - materialCost;
+        if (profit <= 0) continue;
+
+        const typeLabel = { gem: 'gem', block: 'block', forge: 'forge' }[recipe.type] || recipe.type;
+        results.push({
+            name: formatItemName(recipe.output),
+            type: typeLabel,
+            cost: materialCost,
+            revenue,
+            profit,
+            roi: (profit / materialCost) * 100,
+        });
+    }
+    results.sort((a, b) => b.profit - a.profit);
+
+    fuseBody.innerHTML = '';
+    for (const r of results) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${escapeHtml(r.name)}</td>
+            <td><span class="fuse-type type-${r.type}">${r.type}</span></td>
+            <td class="num">${fmtCoins(r.cost)}</td>
+            <td class="num">${fmtCoins(r.revenue)}</td>
+            <td class="num positive">${fmtCoins(r.profit)}</td>
+            <td class="num positive">${r.roi.toFixed(1)}%</td>
+        `;
+        fuseBody.appendChild(tr);
+    }
+
+    if (results.length === 0) {
+        fuseBody.innerHTML = '<tr class="loading-row"><td colspan="6">no profitable fusing recipes</td></tr>';
+    }
+}
+
 // --- minions ---
 function renderMinions(items) {
     const itemsById = {};
@@ -905,6 +1019,9 @@ function renderAll() {
         renderGuides();
         const shown = currentGuideFilter === 'all' ? GUIDES.length : GUIDES.filter(g => g.category === currentGuideFilter).length;
         itemCountEl.textContent = shown + ' guides';
+    } else if (currentView === 'fuse') {
+        renderFusing(allItems);
+        itemCountEl.textContent = allItems.length + ' items';
     }
 }
 
@@ -922,6 +1039,7 @@ tabs.forEach(tab => {
         methodsView.classList.toggle('active', currentView === 'methods');
         minionView.classList.toggle('active', currentView === 'minions');
         guidesView.classList.toggle('active', currentView === 'guides');
+        fuseView.classList.toggle('active', currentView === 'fuse');
         renderAll();
     });
 });

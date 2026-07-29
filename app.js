@@ -357,6 +357,9 @@ function formatItemName(productId) {
         .join(' ');
 }
 
+// --- api key ---
+const API_KEY = 'cc235486-2fb4-4cc4-ba02-cf74a9b1f0e5';
+
 // --- state ---
 let allItems = [];
 let currentSort = { field: 'spreadPct', dir: 'desc' };
@@ -574,6 +577,8 @@ const methodsView = document.getElementById('methodsView');
 const minionView = document.getElementById('minionView');
 const guidesView = document.getElementById('guidesView');
 const fuseView = document.getElementById('fuseView');
+const auctionsView = document.getElementById('auctionsView');
+const auctionsBody = document.getElementById('auctionsBody');
 const tabs = document.querySelectorAll('.tab');
 const ths = document.querySelectorAll('thead th.sortable');
 
@@ -613,7 +618,9 @@ async function fetchBazaar() {
     statusEl.className = 'status';
 
     try {
-        const res = await fetch('https://api.hypixel.net/v2/skyblock/bazaar');
+        const res = await fetch('https://api.hypixel.net/v2/skyblock/bazaar', {
+            headers: { 'API-Key': API_KEY }
+        });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         if (!data.success) throw new Error('API error');
@@ -624,6 +631,43 @@ async function fetchBazaar() {
         console.error('Bazaar fetch failed:', e);
         return null;
     }
+}
+
+async function fetchAuctionsPage(page) {
+    try {
+        const res = await fetch(`https://api.hypixel.net/v2/skyblock/auctions?page=${page}`, {
+            headers: { 'API-Key': API_KEY }
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!data.success) return null;
+        return data.auctions || [];
+    } catch (e) {
+        return null;
+    }
+}
+
+async function fetchAuctions() {
+    statusEl.textContent = 'scanning';
+    statusEl.className = 'status';
+
+    // Fetch first page to get total pages, then fetch remaining concurrently
+    const first = await fetchAuctionsPage(0);
+    if (!first) {
+        statusEl.textContent = 'error';
+        statusEl.className = 'status err';
+        return [];
+    }
+
+    // Fetch pages 1-4 (5 pages total, ~5000 auctions)
+    const remaining = await Promise.all([1, 2, 3, 4].map(p => fetchAuctionsPage(p)));
+
+    let all = [...first];
+    for (const batch of remaining) {
+        if (batch) all = all.concat(batch);
+    }
+
+    return all;
 }
 
 function processBazaar(data) {
@@ -1022,6 +1066,8 @@ function renderAll() {
     } else if (currentView === 'fuse') {
         renderFusing(allItems);
         itemCountEl.textContent = allItems.length + ' items';
+    } else if (currentView === 'auctions') {
+        itemCountEl.textContent = (auctionSnipes ? auctionSnipes.length : 0) + ' snipes';
     }
 }
 
@@ -1040,6 +1086,8 @@ tabs.forEach(tab => {
         minionView.classList.toggle('active', currentView === 'minions');
         guidesView.classList.toggle('active', currentView === 'guides');
         fuseView.classList.toggle('active', currentView === 'fuse');
+        auctionsView.classList.toggle('active', currentView === 'auctions');
+        if (currentView === 'auctions') loadAuctions();
         renderAll();
     });
 });
@@ -1081,6 +1129,187 @@ filterBtns.forEach(btn => {
         itemCountEl.textContent = shown + ' guides';
     });
 });
+
+// --- auctions ---
+let auctionSnipes = [];
+let auctionsLoaded = false;
+
+async function loadAuctions() {
+    if (allItems.length === 0) {
+        auctionsBody.innerHTML = '<tr class="loading-row"><td colspan="5">waiting for bazaar data&hellip;</td></tr>';
+        return;
+    }
+
+    if (auctionsLoaded) {
+        renderAuctionsTable();
+        return;
+    }
+
+    auctionsBody.innerHTML = '<tr class="loading-row"><td colspan="5">scanning auction house&hellip;</td></tr>';
+
+    const auctions = await fetchAuctions();
+
+    // Build bazaar price lookup
+    const bzById = {};
+    for (const item of allItems) bzById[item.id] = item;
+
+    const snipes = [];
+    for (const auc of auctions) {
+        if (!auc.bin) continue;
+
+        let bzId = auc.item_name ? auc.item_name.toUpperCase().replace(/ /g, '_') : '';
+        let bzItem = bzById[bzId];
+
+        // Try explicit name mapping for common items
+        if (!bzItem) {
+            const nameToId = {
+                'Enchanted Sugar Cane': 'ENCHANTED_SUGAR_CANE',
+                'Enchanted Slimeball': 'ENCHANTED_SLIME_BALL',
+                'Enchanted Slime Block': 'ENCHANTED_SLIME_BLOCK',
+                'Enchanted Iron': 'ENCHANTED_IRON',
+                'Enchanted Iron Block': 'ENCHANTED_IRON_BLOCK',
+                'Enchanted Gold': 'ENCHANTED_GOLD',
+                'Enchanted Gold Block': 'ENCHANTED_GOLD_BLOCK',
+                'Enchanted Diamond': 'ENCHANTED_DIAMOND',
+                'Enchanted Diamond Block': 'ENCHANTED_DIAMOND_BLOCK',
+                'Enchanted Emerald': 'ENCHANTED_EMERALD',
+                'Enchanted Emerald Block': 'ENCHANTED_EMERALD_BLOCK',
+                'Enchanted Coal': 'ENCHANTED_COAL',
+                'Enchanted Coal Block': 'ENCHANTED_COAL_BLOCK',
+                'Enchanted Redstone': 'ENCHANTED_REDSTONE',
+                'Enchanted Redstone Block': 'ENCHANTED_REDSTONE_BLOCK',
+                'Enchanted Lapis Lazuli': 'ENCHANTED_LAPIS_LAZULI',
+                'Enchanted Lapis Block': 'ENCHANTED_LAPIS_LAZULI_BLOCK',
+                'Enchanted Bone': 'ENCHANTED_BONE',
+                'Enchanted Bone Block': 'ENCHANTED_BONE_BLOCK',
+                'Enchanted Obsidian': 'ENCHANTED_OBSIDIAN',
+                'Enchanted Quartz': 'ENCHANTED_QUARTZ',
+                'Enchanted Quartz Block': 'ENCHANTED_QUARTZ_BLOCK',
+                'Enchanted Glowstone': 'ENCHANTED_GLOWSTONE',
+                'Enchanted Glowstone Dust': 'ENCHANTED_GLOWSTONE_DUST',
+                'Enchanted Flint': 'ENCHANTED_FLINT',
+                'Enchanted String': 'ENCHANTED_STRING',
+                'Enchanted Spider Eye': 'ENCHANTED_SPIDER_EYE',
+                'Enchanted Rotten Flesh': 'ENCHANTED_ROTTEN_FLESH',
+                'Enchanted Gunpowder': 'ENCHANTED_GUNPOWDER',
+                'Enchanted Ender Pearl': 'ENCHANTED_ENDER_PEARL',
+                'Enchanted Blaze Rod': 'ENCHANTED_BLAZE_ROD',
+                'Enchanted Magma Cream': 'ENCHANTED_MAGMA_CREAM',
+                'Enchanted Ice': 'ENCHANTED_ICE',
+                'Enchanted Packed Ice': 'ENCHANTED_PACKED_ICE',
+                'Enchanted Sand': 'ENCHANTED_SAND',
+                'Enchanted Clay': 'ENCHANTED_CLAY_BALL',
+                'Enchanted Cactus': 'ENCHANTED_CACTUS',
+                'Enchanted Cactus Green': 'ENCHANTED_CACTUS_GREEN',
+                'Enchanted Seeds': 'ENCHANTED_SEEDS',
+                'Enchanted Potato': 'ENCHANTED_POTATO',
+                'Enchanted Carrot': 'ENCHANTED_CARROT',
+                'Enchanted Pumpkin': 'ENCHANTED_PUMPKIN',
+                'Enchanted Melon': 'ENCHANTED_MELON',
+                'Enchanted Nether Wart': 'ENCHANTED_NETHER_STALK',
+                'Enchanted Mithril': 'ENCHANTED_MITHRIL',
+                'Enchanted Raw Fish': 'ENCHANTED_RAW_FISH',
+                'Enchanted Raw Salmon': 'ENCHANTED_RAW_SALMON',
+                'Enchanted Pufferfish': 'ENCHANTED_PUFFERFISH',
+                'Enchanted Rabbit Hide': 'ENCHANTED_RABBIT_HIDE',
+                'Enchanted Rabbit Foot': 'ENCHANTED_RABBIT_FOOT',
+                'Enchanted Leather': 'ENCHANTED_LEATHER',
+                'Enchanted Feather': 'ENCHANTED_FEATHER',
+                'Enchanted Raw Chicken': 'ENCHANTED_RAW_CHICKEN',
+                'Enchanted Raw Beef': 'ENCHANTED_RAW_BEEF',
+                'Enchanted Pork': 'ENCHANTED_PORK',
+                'Enchanted Mutton': 'ENCHANTED_MUTTON',
+                'Enchanted Hay Bale': 'ENCHANTED_HAY_BLOCK',
+                'Enchanted Snow Block': 'ENCHANTED_SNOW_BLOCK',
+                'Enchanted Brown Mushroom': 'ENCHANTED_BROWN_MUSHROOM',
+                'Enchanted Red Mushroom': 'ENCHANTED_RED_MUSHROOM',
+                'Refined Mithril': 'REFINED_MITHRIL',
+                'Refined Titanium': 'REFINED_TITANIUM',
+                'Booster Cookie': 'BOOSTER_COOKIE',
+                'Super Enchanted Egg': 'SUPER_EGG',
+                'Recombobulator 3000': 'RECOMBOBULATOR_3000',
+                'Hot Potato Book': 'HOT_POTATO_BOOK',
+                'Fuming Potato Book': 'FUMING_POTATO_BOOK',
+                'God Potion': 'GOD_POTION_2',
+                'Enchanted Titanium': 'ENCHANTED_TITANIUM',
+                'Perfect Ruby': 'PERFECT_RUBY_GEM',
+                'Perfect Jade': 'PERFECT_JADE_GEM',
+                'Perfect Sapphire': 'PERFECT_SAPPHIRE_GEM',
+                'Perfect Amber': 'PERFECT_AMBER_GEM',
+                'Perfect Amethyst': 'PERFECT_AMETHYST_GEM',
+                'Perfect Topaz': 'PERFECT_TOPAZ_GEM',
+                'Perfect Jasper': 'PERFECT_JASPER_GEM',
+                'Perfect Opal': 'PERFECT_OPAL_GEM',
+                'Perfect Peridot': 'PERFECT_PERIDOT_GEM',
+                'Perfect Citrine': 'PERFECT_CITRINE_GEM',
+                'Perfect Onyx': 'PERFECT_ONYX_GEM',
+                'Perfect Aquamarine': 'PERFECT_AQUAMARINE_GEM',
+                'Flawless Ruby': 'FLAWLESS_RUBY_GEM',
+                'Flawless Jade': 'FLAWLESS_JADE_GEM',
+                'Flawless Sapphire': 'FLAWLESS_SAPPHIRE_GEM',
+                'Flawless Amber': 'FLAWLESS_AMBER_GEM',
+                'Flawless Amethyst': 'FLAWLESS_AMETHYST_GEM',
+                'Flawless Topaz': 'FLAWLESS_TOPAZ_GEM',
+                'Flawless Jasper': 'FLAWLESS_JASPER_GEM',
+                'Flawless Opal': 'FLAWLESS_OPAL_GEM',
+                'Flawless Peridot': 'FLAWLESS_PERIDOT_GEM',
+                'Flawless Citrine': 'FLAWLESS_CITRINE_GEM',
+                'Flawless Onyx': 'FLAWLESS_ONYX_GEM',
+                'Flawless Aquamarine': 'FLAWLESS_AQUAMARINE_GEM',
+            };
+            bzId = nameToId[auc.item_name] || bzId;
+            bzItem = bzById[bzId];
+        }
+
+        if (!bzItem || bzItem.buyPrice <= 0) continue;
+
+        const binPrice = auc.starting_bid;
+        const sellRevenue = bzItem.buyPrice * 0.99;
+        const profit = sellRevenue - binPrice;
+
+        if (profit <= 0) continue;
+
+        snipes.push({
+            name: auc.item_name || formatItemName(bzId),
+            bin: binPrice,
+            bzSell: bzItem.buyPrice,
+            profit,
+            roi: (profit / binPrice) * 100,
+            tier: auc.tier || '',
+        });
+    }
+
+    snipes.sort((a, b) => b.profit - a.profit);
+    auctionSnipes = snipes;
+    auctionsLoaded = true;
+
+    renderAuctionsTable();
+
+    statusEl.textContent = 'live';
+    statusEl.className = 'status live';
+}
+
+function renderAuctionsTable() {
+    auctionsBody.innerHTML = '';
+    itemCountEl.textContent = auctionSnipes.length + ' snipes';
+
+    if (auctionSnipes.length === 0) {
+        auctionsBody.innerHTML = '<tr class="loading-row"><td colspan="5">no profitable auctions found &mdash; try again later</td></tr>';
+        return;
+    }
+
+    for (const s of auctionSnipes.slice(0, 50)) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${escapeHtml(s.name)}</td>
+            <td class="num">${fmtCoinsFull(s.bin)}</td>
+            <td class="num">${fmtCoinsFull(s.bzSell)}</td>
+            <td class="num positive">${fmtCoinsFull(s.profit)}</td>
+            <td class="num positive">${s.roi.toFixed(1)}%</td>
+        `;
+        auctionsBody.appendChild(tr);
+    }
+}
 
 // --- theme ---
 const themeBtn = document.getElementById('themeBtn');
@@ -1139,12 +1368,15 @@ async function loadData() {
     if (!data) return;
 
     allItems = processBazaar(data);
+    auctionsLoaded = false;
+    auctionSnipes = [];
     lastFetchTime = Date.now();
     statusEl.textContent = 'live';
     statusEl.className = 'status ok';
     lastUpdatedEl.textContent = timeAgo(lastFetchTime);
     if (!timeUpdateInterval) startTimeUpdate();
     renderAll();
+    if (currentView === 'auctions') loadAuctions();
 }
 
 let timeUpdateInterval = null;

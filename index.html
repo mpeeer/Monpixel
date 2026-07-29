@@ -47,6 +47,7 @@
             <button class="tab" data-tab="minions">minions</button>
             <button class="tab" data-tab="guides">guides</button>
             <button class="tab" data-tab="fuse">fusing</button>
+            <button class="tab" data-tab="auctions">auctions</button>
         </div>
     </div>
 
@@ -209,6 +210,29 @@
                     </thead>
                     <tbody id="fuseBody">
                         <tr class="loading-row"><td colspan="6">loading&hellip;</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Auctions View -->
+        <section id="auctionsView" class="view">
+            <div class="section-intro">
+                <p>auction house sniper &mdash; finds BIN auctions listed below bazaar instant-sell price. buy on AH, instant-sell on bazaar for profit (after 1% tax). scans first 5 pages (~5k auctions).</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>item</th>
+                            <th>ah bin</th>
+                            <th>bz sell now</th>
+                            <th title="profit after 1% bazaar tax">profit</th>
+                            <th>roi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auctionsBody">
+                        <tr class="loading-row"><td colspan="5">click auctions tab to scan&hellip;</td></tr>
                     </tbody>
                 </table>
             </div>

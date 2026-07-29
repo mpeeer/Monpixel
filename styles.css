@@ -412,8 +412,8 @@ td.negative { color: var(--negative); }
 /* --- methods grid --- */
 .methods-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
     padding: 16px 0;
 }
 
@@ -496,6 +496,7 @@ footer .dot {
 
     .methods-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     thead th, tbody td {

@@ -362,10 +362,46 @@ let allItems = [];
 let currentSort = { field: 'spreadPct', dir: 'desc' };
 let currentView = 'bazaar';
 
+// --- NPC prices (buy from NPC shop, sell on bazaar) ---
+const NPC_PRICES = {
+    'ICE': 1,
+    'PACKED_ICE': 9,
+    'GOLD_INGOT': 4,
+    'IRON_INGOT': 5,
+    'COAL': 2,
+    'DIAMOND': 8,
+    'EMERALD': 5,
+    'REDSTONE': 2,
+    'LAPIS_LAZULI': 2,
+    'SAND': 2,
+    'GRAVEL': 4,
+    'FLINT': 4,
+    'OBSIDIAN': 24,
+    'ROTTEN_FLESH': 2,
+    'BONE': 2,
+    'STRING': 3,
+    'SPIDER_EYE': 3,
+    'GUNPOWDER': 4,
+    'ENDER_PEARL': 10,
+    'SLIME_BALL': 5,
+    'MAGMA_CREAM': 8,
+    'BLAZE_ROD': 10,
+    'CLAY_BALL': 3,
+    'LILY_PAD': 10,
+    'RAW_FISH': 6,
+    'RAW_FISH:1': 10,
+    'RAW_FISH:3': 15,
+    'PRISMARINE_SHARD': 5,
+    'PRISMARINE_CRYSTALS': 5,
+    'SPONGE': 80,
+    'NETHER_STALK': 10,
+};
+
 // --- DOM refs ---
 const bazaarBody = document.getElementById('bazaarBody');
 const flipBody = document.getElementById('flipBody');
 const volumeBody = document.getElementById('volumeBody');
+const npcBody = document.getElementById('npcBody');
 const searchInput = document.getElementById('searchInput');
 const statusEl = document.getElementById('status');
 const lastUpdatedEl = document.getElementById('lastUpdated');
@@ -537,6 +573,41 @@ function renderMethods(items) {
 
     if (volumeLeaders.length === 0) {
         volumeBody.innerHTML = '<tr class="loading-row"><td colspan="4">no volume data</td></tr>';
+    }
+
+    // NPC flips: buy from NPC shop, instant-sell on bazaar
+    const npcFlips = [];
+    for (const item of items) {
+        const npcPrice = NPC_PRICES[item.id];
+        if (npcPrice == null) continue;
+        // sell instantly to top buy orders, minus 1% bazaar tax
+        const sellRevenue = item.buyPrice * 0.99;
+        const profit = sellRevenue - npcPrice;
+        if (profit <= 0) continue;
+        npcFlips.push({
+            ...item,
+            npcPrice,
+            profit,
+            roi: (profit / npcPrice) * 100,
+        });
+    }
+    npcFlips.sort((a, b) => b.roi - a.roi);
+
+    npcBody.innerHTML = '';
+    for (const item of npcFlips.slice(0, 15)) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${escapeHtml(item.name)}</td>
+            <td class="num">${fmtCoins(item.npcPrice)}</td>
+            <td class="num">${fmtCoins(item.buyPrice)}</td>
+            <td class="num positive">${fmtCoins(item.profit)}</td>
+            <td class="num positive">${item.roi.toFixed(1)}%</td>
+        `;
+        npcBody.appendChild(tr);
+    }
+
+    if (npcFlips.length === 0) {
+        npcBody.innerHTML = '<tr class="loading-row"><td colspan="5">no profitable npc flips</td></tr>';
     }
 }
 

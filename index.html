@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bazaar</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <h1>skyblock bazaar</h1>
+            <span class="status" id="status">loading</span>
+        </div>
+        <div class="header-right">
+            <span class="last-updated" id="lastUpdated">—</span>
+            <button id="refreshBtn" class="btn" title="refresh">↻</button>
+        </div>
+    </header>
+
+    <div class="controls">
+        <input type="text" id="searchInput" class="search" placeholder="filter items..." autocomplete="off">
+        <div class="tabs">
+            <button class="tab active" data-tab="bazaar">bazaar</button>
+            <button class="tab" data-tab="methods">methods</button>
+        </div>
+    </div>
+
+    <main>
+        <!-- Bazaar Table View -->
+        <section id="bazaarView" class="view active">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="name">item <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="buyPrice">buy <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="sellPrice">sell <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="spread">spread <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="spreadPct">% <span class="arrow"></span></th>
+                            <th class="sortable" data-sort="buyVolume">vol <span class="arrow"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="bazaarBody">
+                        <tr class="loading-row"><td colspan="6">loading…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Money Making Methods View -->
+        <section id="methodsView" class="view">
+            <div class="methods-grid">
+                <div class="method-card" id="flipMethods">
+                    <h3>bazaar flips</h3>
+                    <p class="method-desc">buy order → sell offer spread</p>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>item</th>
+                                    <th>buy at</th>
+                                    <th>sell at</th>
+                                    <th>profit</th>
+                                    <th>margin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="flipBody">
+                                <tr class="loading-row"><td colspan="5">loading…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>volume leaders</h3>
+                    <p class="method-desc">highest 7-day trade volume</p>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>item</th>
+                                    <th>price</th>
+                                    <th>weekly vol</th>
+                                    <th>est. daily coins</th>
+                                </tr>
+                            </thead>
+                            <tbody id="volumeBody">
+                                <tr class="loading-row"><td colspan="4">loading…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <span>data from hypixel api</span>
+        <span class="dot">·</span>
+        <span id="itemCount">0 items</span>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

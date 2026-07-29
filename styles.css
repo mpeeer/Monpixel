@@ -1,0 +1,350 @@
+/* --- reset & base --- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #0b0b0c;
+    --surface: #111113;
+    --surface-hover: #161618;
+    --border: #1e1e21;
+    --border-light: #2a2a2e;
+    --text: #d4d4d6;
+    --text-secondary: #7d7d82;
+    --text-muted: #4a4a4f;
+    --accent: #8b8b91;
+    --positive: #4a7c59;
+    --negative: #8b4e4e;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+html {
+    font-size: 14px;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- header --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+header h1 {
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+
+.status {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.status.ok { color: var(--positive); }
+.status.err { color: var(--negative); }
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.last-updated {
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+}
+
+.btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.btn:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+}
+
+/* --- controls --- */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+}
+
+.search {
+    flex: 1;
+    max-width: 320px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-family: var(--font);
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.search::placeholder {
+    color: var(--text-muted);
+}
+
+.search:focus {
+    border-color: var(--border-light);
+}
+
+/* --- tabs --- */
+.tabs {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.tab {
+    background: var(--surface);
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-family: var(--font);
+    padding: 8px 16px;
+    transition: background 0.15s, color 0.15s;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+}
+
+.tab:hover {
+    color: var(--text-secondary);
+}
+
+.tab.active {
+    background: var(--surface-hover);
+    color: var(--text);
+}
+
+/* --- views --- */
+.view {
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+/* --- table --- */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+thead th {
+    text-align: left;
+    font-weight: 450;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    cursor: default;
+    user-select: none;
+}
+
+thead th.sortable {
+    cursor: pointer;
+}
+
+thead th.sortable:hover {
+    color: var(--text-secondary);
+}
+
+thead th.sorted {
+    color: var(--text);
+}
+
+thead th .arrow::after {
+    content: '';
+    margin-left: 2px;
+    font-size: 0.65rem;
+}
+
+thead th.sorted.asc .arrow::after { content: '↑'; }
+thead th.sorted.desc .arrow::after { content: '↓'; }
+
+tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+tbody td:first-child {
+    font-family: var(--font);
+    font-size: 0.82rem;
+}
+
+tbody tr:hover {
+    background: var(--surface);
+}
+
+tbody tr:hover td:first-child {
+    color: #fff;
+}
+
+td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+td.positive { color: var(--positive); }
+td.negative { color: var(--negative); }
+
+/* --- methods grid --- */
+.methods-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 16px 0;
+}
+
+.method-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+}
+
+.method-card h3 {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+
+.method-desc {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+}
+
+.method-card table {
+    font-size: 0.76rem;
+}
+
+.method-card thead th {
+    background: var(--surface);
+    font-size: 0.65rem;
+    padding: 6px 10px;
+}
+
+.method-card tbody td {
+    padding: 7px 10px;
+    font-size: 0.74rem;
+}
+
+.method-card tbody tr:hover {
+    background: var(--surface-hover);
+}
+
+/* --- footer --- */
+footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 0;
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+footer .dot {
+    color: var(--border-light);
+}
+
+/* --- loading state --- */
+.loading-row td {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 40px 12px;
+}
+
+/* --- responsive --- */
+@media (max-width: 768px) {
+    body {
+        padding: 0 12px;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search {
+        max-width: 100%;
+    }
+
+    .methods-grid {
+        grid-template-columns: 1fr;
+    }
+
+    thead th, tbody td {
+        padding: 8px 6px;
+    }
+}

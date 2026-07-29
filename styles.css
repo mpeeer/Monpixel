@@ -412,7 +412,7 @@ td.negative { color: var(--negative); }
 /* --- methods grid --- */
 .methods-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     padding: 16px 0;
 }
@@ -470,6 +470,93 @@ footer {
 
 footer .dot {
     color: var(--border-light);
+}
+
+/* --- filter bar --- */
+.filter-bar {
+    display: flex;
+    gap: 1px;
+    padding: 12px 0 4px;
+}
+
+.filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.68rem;
+    font-family: var(--font-mono);
+    padding: 5px 12px;
+    text-transform: lowercase;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.filter-btn:first-child { border-radius: 4px 0 0 4px; }
+.filter-btn:last-child { border-radius: 0 4px 4px 0; }
+.filter-btn + .filter-btn { border-left: none; }
+
+.filter-btn:hover {
+    color: var(--text-secondary);
+}
+
+.filter-btn.active {
+    background: var(--surface-hover);
+    color: var(--text);
+    border-color: var(--border-light);
+}
+
+/* --- guides --- */
+.guides-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 16px 0;
+}
+
+.guide-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.guide-card h3 {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.guide-card p {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.guide-category {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 2px;
+    align-self: flex-start;
+    background: var(--surface-hover);
+    color: var(--text-muted);
+}
+
+.cat-beginner { color: var(--positive); }
+.cat-intermediate { color: var(--accent); }
+.cat-advanced { color: var(--negative); }
+
+@media (max-width: 768px) {
+    .guides-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* --- loading state --- */

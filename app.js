@@ -397,11 +397,114 @@ const NPC_PRICES = {
     'NETHER_STALK': 10,
 };
 
+// --- craft recipes (output: { material_id: quantity }) ---
+const CRAFT_RECIPES = [
+    // 160 base → 1 enchanted
+    { output: 'ENCHANTED_SUGAR_CANE', materials: { SUGAR_CANE: 160 } },
+    { output: 'ENCHANTED_SLIME_BALL', materials: { SLIME_BALL: 160 } },
+    { output: 'ENCHANTED_SLIME_BLOCK', materials: { ENCHANTED_SLIME_BALL: 160 } },
+    { output: 'ENCHANTED_IRON', materials: { IRON_INGOT: 160 } },
+    { output: 'ENCHANTED_IRON_BLOCK', materials: { ENCHANTED_IRON: 160 } },
+    { output: 'ENCHANTED_GOLD', materials: { GOLD_INGOT: 160 } },
+    { output: 'ENCHANTED_GOLD_BLOCK', materials: { ENCHANTED_GOLD: 160 } },
+    { output: 'ENCHANTED_DIAMOND', materials: { DIAMOND: 160 } },
+    { output: 'ENCHANTED_COAL', materials: { COAL: 160 } },
+    { output: 'ENCHANTED_COAL_BLOCK', materials: { ENCHANTED_COAL: 160 } },
+    { output: 'ENCHANTED_REDSTONE', materials: { REDSTONE: 160 } },
+    { output: 'ENCHANTED_LAPIS_LAZULI', materials: { LAPIS_LAZULI: 160 } },
+    { output: 'ENCHANTED_QUARTZ', materials: { QUARTZ: 160 } },
+    { output: 'ENCHANTED_OBSIDIAN', materials: { OBSIDIAN: 160 } },
+    { output: 'ENCHANTED_GLOWSTONE_DUST', materials: { GLOWSTONE_DUST: 160 } },
+    { output: 'ENCHANTED_FLINT', materials: { FLINT: 160 } },
+    { output: 'ENCHANTED_BONE', materials: { BONE: 160 } },
+    { output: 'ENCHANTED_STRING', materials: { STRING: 160 } },
+    { output: 'ENCHANTED_SPIDER_EYE', materials: { SPIDER_EYE: 160 } },
+    { output: 'ENCHANTED_ROTTEN_FLESH', materials: { ROTTEN_FLESH: 160 } },
+    { output: 'ENCHANTED_GUNPOWDER', materials: { GUNPOWDER: 160 } },
+    { output: 'ENCHANTED_ENDER_PEARL', materials: { ENDER_PEARL: 160 } },
+    { output: 'ENCHANTED_BLAZE_ROD', materials: { BLAZE_ROD: 160 } },
+    { output: 'ENCHANTED_MAGMA_CREAM', materials: { MAGMA_CREAM: 160 } },
+    { output: 'ENCHANTED_ICE', materials: { ICE: 160 } },
+    { output: 'ENCHANTED_PACKED_ICE', materials: { ENCHANTED_ICE: 160 } },
+    { output: 'ENCHANTED_SAND', materials: { SAND: 160 } },
+    { output: 'ENCHANTED_CLAY_BALL', materials: { CLAY_BALL: 160 } },
+    { output: 'ENCHANTED_CACTUS', materials: { CACTUS: 160 } },
+    { output: 'ENCHANTED_CACTUS_GREEN', materials: { ENCHANTED_CACTUS: 160 } },
+    { output: 'ENCHANTED_SEEDS', materials: { SEEDS: 160 } },
+    { output: 'ENCHANTED_POTATO', materials: { POTATO_ITEM: 160 } },
+    { output: 'ENCHANTED_CARROT', materials: { CARROT_ITEM: 160 } },
+    { output: 'ENCHANTED_PUMPKIN', materials: { PUMPKIN: 160 } },
+    { output: 'ENCHANTED_MELON', materials: { MELON: 160 } },
+    { output: 'ENCHANTED_NETHER_STALK', materials: { NETHER_STALK: 160 } },
+    { output: 'ENCHANTED_MITHRIL', materials: { MITHRIL_ORE: 160 } },
+    { output: 'ENCHANTED_EMERALD', materials: { EMERALD: 160 } },
+    { output: 'ENCHANTED_HAY_BLOCK', materials: { WHEAT: 144 } },
+    { output: 'ENCHANTED_RAW_CHICKEN', materials: { RAW_CHICKEN: 160 } },
+    { output: 'ENCHANTED_RAW_BEEF', materials: { RAW_BEEF: 160 } },
+    { output: 'ENCHANTED_PORK', materials: { PORK: 160 } },
+    { output: 'ENCHANTED_MUTTON', materials: { MUTTON: 160 } },
+    { output: 'ENCHANTED_RABBIT_HIDE', materials: { RABBIT_HIDE: 160 } },
+    { output: 'ENCHANTED_RABBIT_FOOT', materials: { RABBIT_FOOT: 160 } },
+    { output: 'ENCHANTED_LEATHER', materials: { LEATHER: 160 } },
+    { output: 'ENCHANTED_FEATHER', materials: { FEATHER: 160 } },
+    { output: 'ENCHANTED_BROWN_MUSHROOM', materials: { BROWN_MUSHROOM: 160 } },
+    { output: 'ENCHANTED_RED_MUSHROOM', materials: { RED_MUSHROOM: 160 } },
+    { output: 'ENCHANTED_RAW_FISH', materials: { RAW_FISH: 160 } },
+    { output: 'ENCHANTED_RAW_SALMON', materials: { 'RAW_FISH:1': 160 } },
+    { output: 'ENCHANTED_PUFFERFISH', materials: { 'RAW_FISH:3': 160 } },
+];
+
+// --- minion data (T11 stats) ---
+const MINION_DATA = [
+    { name: 'Snow', item: 'SNOW_BALL', secs: 6.5, per: 4 },
+    { name: 'Clay', item: 'CLAY_BALL', secs: 16, per: 4 },
+    { name: 'Slime', item: 'SLIME_BALL', secs: 12, per: 1 },
+    { name: 'Magma Cube', item: 'MAGMA_CREAM', secs: 18, per: 1 },
+    { name: 'Blaze', item: 'BLAZE_ROD', secs: 15, per: 1 },
+    { name: 'Enderman', item: 'ENDER_PEARL', secs: 18, per: 1 },
+    { name: 'Iron', item: 'IRON_INGOT', secs: 8, per: 1 },
+    { name: 'Gold', item: 'GOLD_INGOT', secs: 11, per: 1 },
+    { name: 'Diamond', item: 'DIAMOND', secs: 15, per: 1 },
+    { name: 'Emerald', item: 'EMERALD', secs: 14, per: 1 },
+    { name: 'Coal', item: 'COAL', secs: 7, per: 1 },
+    { name: 'Redstone', item: 'REDSTONE', secs: 18, per: 4 },
+    { name: 'Lapis', item: 'LAPIS_LAZULI', secs: 18, per: 4 },
+    { name: 'Quartz', item: 'QUARTZ', secs: 13, per: 1 },
+    { name: 'Obsidian', item: 'OBSIDIAN', secs: 24, per: 1 },
+    { name: 'Glowstone', item: 'GLOWSTONE_DUST', secs: 13, per: 1 },
+    { name: 'Gravel', item: 'GRAVEL', secs: 12, per: 1 },
+    { name: 'Ice', item: 'ICE', secs: 7, per: 1 },
+    { name: 'Sand', item: 'SAND', secs: 12, per: 1 },
+    { name: 'Stone', item: 'COBBLESTONE', secs: 7, per: 1 },
+    { name: 'Wheat', item: 'WHEAT', secs: 10, per: 1 },
+    { name: 'Carrot', item: 'CARROT_ITEM', secs: 10, per: 1 },
+    { name: 'Potato', item: 'POTATO_ITEM', secs: 10, per: 1 },
+    { name: 'Pumpkin', item: 'PUMPKIN', secs: 16, per: 1 },
+    { name: 'Melon', item: 'MELON', secs: 13, per: 4 },
+    { name: 'Cactus', item: 'CACTUS', secs: 12, per: 1 },
+    { name: 'Sugar Cane', item: 'SUGAR_CANE', secs: 12, per: 1 },
+    { name: 'Nether Wart', item: 'NETHER_STALK', secs: 10, per: 1 },
+    { name: 'Cow', item: 'RAW_BEEF', secs: 13, per: 1 },
+    { name: 'Pig', item: 'PORK', secs: 13, per: 1 },
+    { name: 'Chicken', item: 'RAW_CHICKEN', secs: 15, per: 1 },
+    { name: 'Sheep', item: 'MUTTON', secs: 12, per: 1 },
+    { name: 'Rabbit', item: 'RABBIT_HIDE', secs: 12, per: 1 },
+    { name: 'Zombie', item: 'ROTTEN_FLESH', secs: 13, per: 1 },
+    { name: 'Skeleton', item: 'BONE', secs: 13, per: 1 },
+    { name: 'Spider', item: 'STRING', secs: 10, per: 1 },
+    { name: 'Cave Spider', item: 'SPIDER_EYE', secs: 10, per: 1 },
+    { name: 'Creeper', item: 'GUNPOWDER', secs: 14, per: 1 },
+    { name: 'Mithril', item: 'MITHRIL_ORE', secs: 40, per: 1 },
+];
+
 // --- DOM refs ---
 const bazaarBody = document.getElementById('bazaarBody');
 const flipBody = document.getElementById('flipBody');
 const volumeBody = document.getElementById('volumeBody');
 const npcBody = document.getElementById('npcBody');
+const craftBody = document.getElementById('craftBody');
+const minionBody = document.getElementById('minionBody');
+const guidesContainer = document.getElementById('guidesContainer');
 const searchInput = document.getElementById('searchInput');
 const statusEl = document.getElementById('status');
 const lastUpdatedEl = document.getElementById('lastUpdated');
@@ -409,6 +512,8 @@ const refreshBtn = document.getElementById('refreshBtn');
 const itemCountEl = document.getElementById('itemCount');
 const bazaarView = document.getElementById('bazaarView');
 const methodsView = document.getElementById('methodsView');
+const minionView = document.getElementById('minionView');
+const guidesView = document.getElementById('guidesView');
 const tabs = document.querySelectorAll('.tab');
 const ths = document.querySelectorAll('thead th.sortable');
 
@@ -609,6 +714,154 @@ function renderMethods(items) {
     if (npcFlips.length === 0) {
         npcBody.innerHTML = '<tr class="loading-row"><td colspan="5">no profitable npc flips</td></tr>';
     }
+
+    // Craft flips: buy materials from bazaar, craft, sell result
+    const itemsById = {};
+    for (const item of items) itemsById[item.id] = item;
+
+    const craftFlips = [];
+    for (const recipe of CRAFT_RECIPES) {
+        const outputItem = itemsById[recipe.output];
+        if (!outputItem) continue;
+
+        let materialCost = 0;
+        let missing = false;
+        for (const [matId, qty] of Object.entries(recipe.materials)) {
+            const matItem = itemsById[matId];
+            if (!matItem || matItem.sellPrice <= 0) { missing = true; break; }
+            materialCost += matItem.sellPrice * qty;
+        }
+        if (missing) continue;
+
+        const revenue = outputItem.buyPrice * 0.99;
+        const profit = revenue - materialCost;
+        if (profit <= 0) continue;
+
+        craftFlips.push({
+            name: formatItemName(recipe.output),
+            cost: materialCost,
+            revenue,
+            profit,
+            roi: (profit / materialCost) * 100,
+        });
+    }
+    craftFlips.sort((a, b) => b.profit - a.profit);
+
+    craftBody.innerHTML = '';
+    for (const flip of craftFlips.slice(0, 15)) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${escapeHtml(flip.name)}</td>
+            <td class="num">${fmtCoins(flip.cost)}</td>
+            <td class="num">${fmtCoins(flip.revenue)}</td>
+            <td class="num positive">${fmtCoins(flip.profit)}</td>
+            <td class="num positive">${flip.roi.toFixed(1)}%</td>
+        `;
+        craftBody.appendChild(tr);
+    }
+
+    if (craftFlips.length === 0) {
+        craftBody.innerHTML = '<tr class="loading-row"><td colspan="5">no profitable craft flips</td></tr>';
+    }
+}
+
+// --- guides ---
+const GUIDES = [
+    {
+        id: 1,
+        title: 'Getting Started with Bazaar Flipping',
+        category: 'beginner',
+        body: 'The bazaar is the best way to make money early on. Start by looking at the order flipping table on the methods tab — pick items with positive margin and decent volume. Place a buy order slightly above the current top buy order, wait for it to fill, then place a sell offer slightly below the top sell offer. The spread between these two prices is your profit. Always account for the 1% bazaar tax.',
+    },
+    {
+        id: 2,
+        title: 'NPC Flipping for Guaranteed Profit',
+        category: 'beginner',
+        body: 'Some items can be bought from NPC shops at a fixed price and instantly resold on the bazaar. Check the NPC flipping card on the methods tab — it shows which items are profitable right now. Popular NPC flips include ice (1 coin from Builder), gold ingots (4 coins from Mine Merchant), and rotten flesh (2 coins from Adventurer). These flips are risk-free since NPC prices never change.',
+    },
+    {
+        id: 3,
+        title: 'Craft Flipping Strategy',
+        category: 'intermediate',
+        body: 'Craft flipping involves buying raw materials on the bazaar, crafting them into enchanted items, and selling the enchanted version for profit. For example, buy 160 sugar cane, craft into 1 enchanted sugar cane, then sell it. The craft flipping card on the methods tab calculates profit after 1% tax. Focus on recipes where the enchanted item sells for significantly more than the total material cost.',
+    },
+    {
+        id: 4,
+        title: 'Setting Up Minions for Passive Income',
+        category: 'beginner',
+        body: 'Minions generate items passively while you\'re offline. Check the minions tab to see which minion gives the most coins per day at current bazaar prices. Snow and clay minions are popular choices for consistent income. Place down as many as you can, upgrade them to T11, and use enchanted hoppers or budget hoppers to auto-sell their output. Check back regularly to collect and reinvest.',
+    },
+    {
+        id: 5,
+        title: 'Advanced: Bulk Order Flipping',
+        category: 'advanced',
+        body: 'Once you have capital (50m+ coins), bulk order flipping becomes viable. Instead of flipping one item at a time, place large buy orders for high-volume items (check the volume trading card). Fill orders in bulk, then create sell offers in bulk. The profit per item is small but the volume makes up for it. Good candidates are enchanted materials with consistent demand like enchanted sugar cane, enchanted slime balls, and enchanted iron.',
+    },
+];
+
+let currentGuideFilter = 'all';
+
+function renderGuides() {
+    const filtered = currentGuideFilter === 'all'
+        ? GUIDES
+        : GUIDES.filter(g => g.category === currentGuideFilter);
+
+    guidesContainer.innerHTML = '';
+    for (const guide of filtered) {
+        const card = document.createElement('div');
+        card.className = 'guide-card';
+        card.innerHTML = `
+            <span class="guide-category cat-${guide.category}">${guide.category}</span>
+            <h3>${escapeHtml(guide.title)}</h3>
+            <p>${escapeHtml(guide.body)}</p>
+        `;
+        guidesContainer.appendChild(card);
+    }
+
+    if (filtered.length === 0) {
+        guidesContainer.innerHTML = '<div class="loading-row" style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text-muted)">no guides in this category</div>';
+    }
+}
+
+// --- minions ---
+function renderMinions(items) {
+    const itemsById = {};
+    for (const item of items) itemsById[item.id] = item;
+
+    const results = [];
+    for (const minion of MINION_DATA) {
+        const bzItem = itemsById[minion.item];
+        if (!bzItem || bzItem.buyPrice <= 0) continue;
+
+        const itemsPerDay = (86400 / minion.secs) * minion.per;
+        const coinsPerDay = itemsPerDay * bzItem.buyPrice * 0.99;
+
+        results.push({
+            name: minion.name,
+            item: formatItemName(minion.item),
+            price: bzItem.buyPrice,
+            perDay: itemsPerDay,
+            coinsPerDay,
+        });
+    }
+    results.sort((a, b) => b.coinsPerDay - a.coinsPerDay);
+
+    minionBody.innerHTML = '';
+    for (const r of results) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${escapeHtml(r.name)}</td>
+            <td>${escapeHtml(r.item)}</td>
+            <td class="num">${fmtCoins(r.price)}</td>
+            <td class="num">${fmtNum(r.perDay)}</td>
+            <td class="num positive">${fmtCoins(r.coinsPerDay)}</td>
+        `;
+        minionBody.appendChild(tr);
+    }
+
+    if (results.length === 0) {
+        minionBody.innerHTML = '<tr class="loading-row"><td colspan="5">no minion data available</td></tr>';
+    }
 }
 
 // --- sorting ---
@@ -642,9 +895,16 @@ function renderAll() {
     if (currentView === 'bazaar') {
         renderBazaar(filtered);
         itemCountEl.textContent = filtered.length + ' items';
-    } else {
+    } else if (currentView === 'methods') {
         renderMethods(allItems);
         itemCountEl.textContent = allItems.length + ' items';
+    } else if (currentView === 'minions') {
+        renderMinions(allItems);
+        itemCountEl.textContent = allItems.length + ' items';
+    } else if (currentView === 'guides') {
+        renderGuides();
+        const shown = currentGuideFilter === 'all' ? GUIDES.length : GUIDES.filter(g => g.category === currentGuideFilter).length;
+        itemCountEl.textContent = shown + ' guides';
     }
 }
 
@@ -660,6 +920,8 @@ tabs.forEach(tab => {
         tab.classList.add('active');
         bazaarView.classList.toggle('active', currentView === 'bazaar');
         methodsView.classList.toggle('active', currentView === 'methods');
+        minionView.classList.toggle('active', currentView === 'minions');
+        guidesView.classList.toggle('active', currentView === 'guides');
         renderAll();
     });
 });
@@ -689,6 +951,19 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
+// --- guide filters ---
+const filterBtns = document.querySelectorAll('.filter-btn');
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentGuideFilter = btn.dataset.filter;
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderGuides();
+        const shown = currentGuideFilter === 'all' ? GUIDES.length : GUIDES.filter(g => g.category === currentGuideFilter).length;
+        itemCountEl.textContent = shown + ' guides';
+    });
+});
+
 // --- theme ---
 const themeBtn = document.getElementById('themeBtn');
 const themeDropdown = document.getElementById('themeDropdown');
@@ -696,6 +971,7 @@ const themeIcon = document.getElementById('themeIcon');
 const themeLabel = document.getElementById('themeLabel');
 const themeOptions = document.querySelectorAll('.theme-option');
 
+const THEMES = ['dark', 'light', 'warm', 'skyblock'];
 const THEME_ICONS = { dark: '◐', light: '○', warm: '◒', skyblock: '◆' };
 
 function getTheme() {

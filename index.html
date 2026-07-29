@@ -44,6 +44,8 @@
         <div class="tabs">
             <button class="tab active" data-tab="bazaar">bazaar</button>
             <button class="tab" data-tab="methods">methods</button>
+            <button class="tab" data-tab="minions">minions</button>
+            <button class="tab" data-tab="guides">guides</button>
         </div>
     </div>
 
@@ -81,7 +83,7 @@
             <div class="methods-grid">
                 <div class="method-card" id="flipMethods">
                     <h3>order flipping</h3>
-                    <p class="method-desc">place a buy order, wait for it to fill, then place a sell offer. profit shown after 1% bazaar tax.</p>
+                    <p class="method-desc">place a buy order, wait for fill, then place a sell offer. profit after 1% tax.</p>
                     <div class="table-container">
                         <table>
                             <thead>
@@ -121,6 +123,27 @@
                     </div>
                 </div>
 
+                <div class="method-card" id="craftMethods">
+                    <h3>craft flipping</h3>
+                    <p class="method-desc">buy materials on bazaar, craft into a higher-tier item, instant-sell the result. profit after 1% tax.</p>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>item</th>
+                                    <th>material cost</th>
+                                    <th>sell for</th>
+                                    <th>profit / ea</th>
+                                    <th>roi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="craftBody">
+                                <tr class="loading-row"><td colspan="5">loading&hellip;</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div class="method-card">
                     <h3>volume trading</h3>
                     <p class="method-desc">highest weekly trade volume &mdash; good for bulk flipping where small margins add up</p>
@@ -140,6 +163,44 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Minion Calculator View -->
+        <section id="minionView" class="view">
+            <div class="section-intro">
+                <p>estimated coins per day for t11 minions &mdash; assumes instant-selling output with enchanted hopper (1% tax)</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>minion</th>
+                            <th>produces</th>
+                            <th>price / ea</th>
+                            <th>items / day</th>
+                            <th>coins / day</th>
+                        </tr>
+                    </thead>
+                    <tbody id="minionBody">
+                        <tr class="loading-row"><td colspan="5">loading&hellip;</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Guides View -->
+        <section id="guidesView" class="view">
+            <div class="section-intro">
+                <p>money-making guides &amp; strategies &mdash; from beginner tips to advanced methods</p>
+            </div>
+            <div class="filter-bar" id="guideFilters">
+                <button class="filter-btn active" data-filter="all">all</button>
+                <button class="filter-btn" data-filter="beginner">beginner</button>
+                <button class="filter-btn" data-filter="intermediate">intermediate</button>
+                <button class="filter-btn" data-filter="advanced">advanced</button>
+            </div>
+            <div class="guides-grid" id="guidesContainer">
             </div>
         </section>
     </main>

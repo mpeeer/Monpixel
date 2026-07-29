@@ -362,6 +362,7 @@ const API_KEY = 'cc235486-2fb4-4cc4-ba02-cf74a9b1f0e5';
 
 // --- state ---
 let allItems = [];
+let prevSnapshot = {};
 let currentSort = { field: 'spreadPct', dir: 'desc' };
 let currentView = 'bazaar';
 let currentBazaarCategory = 'all';
@@ -726,6 +727,12 @@ const guidesView = document.getElementById('guidesView');
 const fuseView = document.getElementById('fuseView');
 const auctionsView = document.getElementById('auctionsView');
 const auctionsBody = document.getElementById('auctionsBody');
+const trendsView = document.getElementById('trendsView');
+const gainersBody = document.getElementById('gainersBody');
+const losersBody = document.getElementById('losersBody');
+const activeBody = document.getElementById('activeBody');
+const trendSearchInput = document.getElementById('trendSearchInput');
+const trendSearchResults = document.getElementById('trendSearchResults');
 const tabs = document.querySelectorAll('.tab');
 const ths = document.querySelectorAll('thead th.sortable');
 
@@ -760,14 +767,45 @@ function timeAgo(ts) {
 }
 
 // --- data ---
+let lastApiCall = 0;
+let apiCallsThisMinute = 0;
+let apiWindowStart = Date.now();
+
+async function throttledFetch(url) {
+    // Enforce minimum 300ms gap between calls
+    const now = Date.now();
+    const gap = now - lastApiCall;
+    if (gap < 300) {
+        await new Promise(r => setTimeout(r, 300 - gap));
+    }
+
+    // Reset counter every 60s
+    if (Date.now() - apiWindowStart > 60000) {
+        apiWindowStart = Date.now();
+        apiCallsThisMinute = 0;
+    }
+
+    // Warn if approaching limit (Hypixel key limit: ~120/min)
+    apiCallsThisMinute++;
+    if (apiCallsThisMinute > 30) {
+        console.warn('API calls this minute:', apiCallsThisMinute, '/ ~120 limit');
+    }
+    if (apiCallsThisMinute > 100) {
+        console.error('Rate limit warning — pausing 5s');
+        await new Promise(r => setTimeout(r, 5000));
+    }
+
+    lastApiCall = Date.now();
+    const res = await fetch(url, { headers: { 'API-Key': API_KEY } });
+    return res;
+}
+
 async function fetchBazaar() {
     statusEl.textContent = 'loading';
     statusEl.className = 'status';
 
     try {
-        const res = await fetch('https://api.hypixel.net/v2/skyblock/bazaar', {
-            headers: { 'API-Key': API_KEY }
-        });
+        const res = await throttledFetch('https://api.hypixel.net/v2/skyblock/bazaar');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         if (!data.success) throw new Error('API error');
@@ -782,9 +820,7 @@ async function fetchBazaar() {
 
 async function fetchAuctionsPage(page) {
     try {
-        const res = await fetch(`https://api.hypixel.net/v2/skyblock/auctions?page=${page}`, {
-            headers: { 'API-Key': API_KEY }
-        });
+        const res = await throttledFetch(`https://api.hypixel.net/v2/skyblock/auctions?page=${page}`);
         if (!res.ok) return null;
         const data = await res.json();
         if (!data.success) return null;
@@ -807,8 +843,12 @@ async function fetchAuctions() {
         return [];
     }
 
-    // Fetch pages 1-4 (5 pages total, ~5000 auctions)
-    const remaining = await Promise.all([1, 2, 3, 4].map(p => fetchAuctionsPage(p)));
+    // Fetch pages 1-4 sequentially with small gaps to avoid burst
+    const remaining = [];
+    for (const p of [1, 2, 3, 4]) {
+        const batch = await fetchAuctionsPage(p);
+        remaining.push(batch);
+    }
 
     let all = [...first];
     for (const batch of remaining) {
@@ -937,6 +977,7 @@ function renderBazaar(items) {
     } else {
         itemCountEl.textContent = (favItems.length + renderedCount) + ' items';
     }
+
 }
 
 function createItemRow(item) {
@@ -1302,11 +1343,23 @@ function renderAll() {
         itemCountEl.textContent = allItems.length + ' items';
     } else if (currentView === 'auctions') {
         itemCountEl.textContent = (auctionSnipes ? auctionSnipes.length : 0) + ' snipes';
+    } else if (currentView === 'trends') {
+        renderTrends(allItems);
+        renderTrendSearch('');
+        itemCountEl.textContent = allItems.length + ' items';
     }
 }
 
 // --- event handlers ---
 searchInput.addEventListener('input', renderAll);
+
+trendSearchInput.addEventListener('input', () => renderTrendSearch(trendSearchInput.value));
+trendSearchInput.addEventListener('blur', () => setTimeout(() => {
+    trendSearchResults.classList.remove('open');
+}, 200));
+trendSearchInput.addEventListener('focus', () => {
+    if (trendSearchInput.value.trim()) renderTrendSearch(trendSearchInput.value);
+});
 
 refreshBtn.addEventListener('click', loadData);
 
@@ -1321,6 +1374,7 @@ tabs.forEach(tab => {
         guidesView.classList.toggle('active', currentView === 'guides');
         fuseView.classList.toggle('active', currentView === 'fuse');
         auctionsView.classList.toggle('active', currentView === 'auctions');
+        trendsView.classList.toggle('active', currentView === 'trends');
         if (currentView === 'auctions') loadAuctions();
         renderAll();
     });
@@ -1559,6 +1613,131 @@ function renderAuctionsTable() {
     }
 }
 
+// --- trends ---
+function renderTrends(items) {
+    if (items.length === 0) {
+        gainersBody.innerHTML = '<tr class="loading-row"><td colspan="4">loading&hellip;</td></tr>';
+        losersBody.innerHTML = '';
+        activeBody.innerHTML = '';
+        return;
+    }
+
+    // Calculate price change for each item
+    const scored = items.map(item => {
+        const prev = prevSnapshot[item.id];
+        const priceChange = prev && prev.buyPrice > 0 ? ((item.buyPrice - prev.buyPrice) / prev.buyPrice) * 100 : 0;
+        const momentum = item.buyMovingWeek > 0 && item.sellMovingWeek > 0
+            ? (item.buyMovingWeek - item.sellMovingWeek) / (item.buyMovingWeek + item.sellMovingWeek) * 100
+            : 0;
+        return { ...item, priceChange, momentum };
+    });
+
+    // Check if price tracking has data yet
+    const hasTracking = Object.keys(prevSnapshot).length > 0;
+    if (!hasTracking) {
+        gainersBody.innerHTML = '<tr class="loading-row"><td colspan="4">waiting for next refresh (30s)&hellip;</td></tr>';
+        losersBody.innerHTML = '';
+        return;
+    }
+
+    // Top gainers (highest positive price change)
+    const gainers = scored.filter(i => i.priceChange > 0).sort((a, b) => b.priceChange - a.priceChange).slice(0, 20);
+    gainersBody.innerHTML = gainers.map(i =>
+        `<tr>
+            <td>${escapeHtml(i.name)}</td>
+            <td class="num">${fmtCoins(i.buyPrice)}</td>
+            <td class="num positive">▲ ${i.priceChange.toFixed(2)}%</td>
+            <td class="num">${fmtNum(i.totalVolume)}</td>
+        </tr>`
+    ).join('') || '<tr class="loading-row"><td colspan="4">no gainers</td></tr>';
+
+    // Top losers (most negative price change)
+    const losers = scored.filter(i => i.priceChange < 0).sort((a, b) => a.priceChange - b.priceChange).slice(0, 20);
+    losersBody.innerHTML = losers.map(i =>
+        `<tr>
+            <td>${escapeHtml(i.name)}</td>
+            <td class="num">${fmtCoins(i.buyPrice)}</td>
+            <td class="num negative">▼ ${Math.abs(i.priceChange).toFixed(2)}%</td>
+            <td class="num">${fmtNum(i.totalVolume)}</td>
+        </tr>`
+    ).join('') || '<tr class="loading-row"><td colspan="4">no losers</td></tr>';
+
+    // Most active (highest weekly volume)
+    const active = scored.sort((a, b) => (b.buyMovingWeek + b.sellMovingWeek) - (a.buyMovingWeek + a.sellMovingWeek)).slice(0, 20);
+    activeBody.innerHTML = active.map(i => {
+        const momClass = i.momentum > 5 ? 'positive' : i.momentum < -5 ? 'negative' : '';
+        return `<tr>
+            <td>${escapeHtml(i.name)}</td>
+            <td class="num">${fmtCoins(i.buyPrice)}</td>
+            <td class="num">${fmtNum(i.buyMovingWeek + i.sellMovingWeek)}</td>
+            <td class="num ${momClass}">${i.momentum > 0 ? '▲' : '▼'} ${Math.abs(i.momentum).toFixed(1)}%</td>
+        </tr>`;
+    }).join('');
+}
+
+// --- trend search ---
+function renderTrendSearch(query) {
+    const q = query.toLowerCase().trim();
+    if (!q) {
+        trendSearchResults.innerHTML = '';
+        trendSearchResults.classList.remove('open');
+        return;
+    }
+    const matches = allItems
+        .filter(i => i.name.toLowerCase().includes(q))
+        .slice(0, 15);
+    if (matches.length === 0) {
+        trendSearchResults.innerHTML = '<div class="trend-no-results">no items found</div>';
+    } else {
+        trendSearchResults.innerHTML = matches.map(i => {
+            const prev = prevSnapshot[i.id];
+            const change = prev && prev.buyPrice > 0 ? ((i.buyPrice - prev.buyPrice) / prev.buyPrice) * 100 : 0;
+            const cls = change > 0 ? 'positive' : change < 0 ? 'negative' : '';
+            const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '—';
+            return `<div class="trend-result-item" data-id="${escapeHtml(i.id)}">
+                <span class="trend-result-name">${escapeHtml(i.name)}</span>
+                <span class="trend-result-price">${fmtCoins(i.buyPrice)}</span>
+                <span class="trend-result-change ${cls}">${arrow} ${Math.abs(change).toFixed(2)}%</span>
+            </div>`;
+        }).join('');
+        // Click handler for result items — show detail card
+        trendSearchResults.querySelectorAll('.trend-result-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const id = el.dataset.id;
+                const item = allItems.find(i => i.id === id);
+                if (item) {
+                    const prev = prevSnapshot[id];
+                    const change = prev && prev.buyPrice > 0 ? ((item.buyPrice - prev.buyPrice) / prev.buyPrice) * 100 : 0;
+                    const momentum = item.buyMovingWeek > 0 && item.sellMovingWeek > 0
+                        ? (item.buyMovingWeek - item.sellMovingWeek) / (item.buyMovingWeek + item.sellMovingWeek) * 100
+                        : 0;
+                    const changeCls = change > 0 ? 'positive' : change < 0 ? 'negative' : '';
+                    const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '—';
+                    const momCls = momentum > 5 ? 'positive' : momentum < -5 ? 'negative' : '';
+                    document.getElementById('trendDetail').innerHTML =
+                        `<div class="trend-detail-card">
+                            <div class="trend-detail-header">
+                                <span class="trend-detail-name">${escapeHtml(item.name)}</span>
+                                <button class="trend-detail-close" onclick="document.getElementById('trendDetail').style.display='none'">×</button>
+                            </div>
+                            <div class="trend-detail-grid">
+                                <div><span class="trend-detail-label">buy price</span><span class="trend-detail-value">${fmtCoins(item.buyPrice)}</span></div>
+                                <div><span class="trend-detail-label">sell price</span><span class="trend-detail-value">${fmtCoins(item.sellPrice)}</span></div>
+                                <div><span class="trend-detail-label">change</span><span class="trend-detail-value ${changeCls}">${arrow} ${Math.abs(change).toFixed(2)}%</span></div>
+                                <div><span class="trend-detail-label">margin</span><span class="trend-detail-value ${item.spread >= 0 ? 'positive' : 'negative'}">${fmtCoins(item.spread)}</span></div>
+                                <div><span class="trend-detail-label">volume</span><span class="trend-detail-value">${fmtNum(item.totalVolume)}</span></div>
+                                <div><span class="trend-detail-label">momentum</span><span class="trend-detail-value ${momCls}">${momentum > 0 ? '▲' : '▼'} ${Math.abs(momentum).toFixed(1)}%</span></div>
+                            </div>
+                        </div>`;
+                    document.getElementById('trendDetail').style.display = 'block';
+                    trendSearchResults.classList.remove('open');
+                }
+            });
+        });
+    }
+    trendSearchResults.classList.add('open');
+}
+
 // --- price alerts ---
 let alerts = [];
 try { alerts = JSON.parse(localStorage.getItem('bzAlerts') || '[]'); } catch(e) {}
@@ -1651,45 +1830,6 @@ function renderAlertModal() {
     panel.classList.toggle('open');
 }
 
-// --- profit calculator ---
-function calcBestFlip() {
-    const budgetInput = document.getElementById('calcBudget');
-    const resultEl = document.getElementById('calcResult');
-    if (!budgetInput || !resultEl) return;
-
-    const budget = parseFloat(budgetInput.value);
-    if (!budget || budget <= 0) {
-        resultEl.innerHTML = '<span class="calc-hint">enter your coin balance</span>';
-        return;
-    }
-
-    let best = null;
-    for (const item of allItems) {
-        if (item.spread <= 0 || item.buyPrice <= 0 || item.buyVolume <= 0 || item.sellVolume <= 0) continue;
-        const qty = Math.floor(budget / item.buyPrice);
-        if (qty < 1) continue;
-        const profitPerItem = item.spread * 0.99;
-        const totalProfit = profitPerItem * qty;
-        if (!best || totalProfit > best.totalProfit) {
-            best = { item, qty, profitPerItem, totalProfit };
-        }
-    }
-
-    if (!best) {
-        resultEl.innerHTML = '<span class="calc-hint">no profitable flips found</span>';
-        return;
-    }
-
-    resultEl.innerHTML = `
-        <div class="calc-best">
-            <span class="calc-item">${escapeHtml(best.item.name)}</span>
-            <span class="calc-meta">buy ${best.qty} × ${fmtCoinsFull(best.item.buyPrice)}</span>
-            <span class="calc-meta">sell ${best.qty} × ${fmtCoinsFull(best.item.sellPrice)}</span>
-            <span class="calc-profit">+${fmtCoinsFull(best.totalProfit)} coins</span>
-        </div>
-    `;
-}
-
 // --- theme ---
 const themeBtn = document.getElementById('themeBtn');
 const themeDropdown = document.getElementById('themeDropdown');
@@ -1742,7 +1882,7 @@ setTheme(getTheme());
 let lastFetchTime = 0;
 let nextRefreshTime = 0;
 let autoRefreshTimer = null;
-const AUTO_REFRESH_SECS = 20;
+const AUTO_REFRESH_SECS = 30;
 
 async function loadData() {
     const data = await fetchBazaar();
@@ -1753,6 +1893,14 @@ async function loadData() {
         updateCountdown();
         autoRefreshTimer = setTimeout(loadData, 15000);
         return;
+    }
+
+    // Save previous snapshot for price change tracking
+    if (allItems.length > 0) {
+        prevSnapshot = {};
+        for (const item of allItems) {
+            prevSnapshot[item.id] = { buyPrice: item.buyPrice, sellPrice: item.sellPrice };
+        }
     }
 
     allItems = processBazaar(data);

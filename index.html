@@ -51,6 +51,7 @@
             <button class="tab" data-tab="guides">guides</button>
             <button class="tab" data-tab="fuse">fusing</button>
             <button class="tab" data-tab="auctions">auctions</button>
+            <button class="tab" data-tab="trends">trends</button>
         </div>
     </div>
 
@@ -94,11 +95,6 @@
         <section id="methodsView" class="view">
             <div class="section-intro">
                 <p>money-making strategies using bazaar data</p>
-            </div>
-            <div class="calc-card">
-                <span class="calc-label">profit calculator</span>
-                <input type="number" id="calcBudget" class="calc-input" placeholder="your coin balance..." oninput="calcBestFlip()">
-                <div id="calcResult" class="calc-result"><span class="calc-hint">enter your coin balance</span></div>
             </div>
             <div class="methods-grid">
                 <div class="method-card" id="flipMethods">
@@ -253,6 +249,70 @@
                         <tr class="loading-row"><td colspan="5">click auctions tab to scan&hellip;</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </section>
+
+        <!-- Trends View -->
+        <section id="trendsView" class="view">
+            <div class="section-intro">
+                <p>price movement tracker &mdash; tracks price changes between refreshes to show rising and falling items</p>
+            </div>
+            <div class="trends-dashboard">
+                <div class="trends-search">
+                    <input type="text" id="trendSearchInput" class="search" placeholder="search item trend..." autocomplete="off">
+                    <div id="trendSearchResults" class="trend-search-results"></div>
+                    <div id="trendDetail" class="trend-detail" style="display:none"></div>
+                </div>
+                <div class="trends-grid">
+                    <div class="trend-card gainers">
+                        <h3>top gainers <span class="trend-arrow up">▲</span></h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>item</th>
+                                        <th>price</th>
+                                        <th>change</th>
+                                        <th>volume</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gainersBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="trend-card losers">
+                        <h3>top losers <span class="trend-arrow down">▼</span></h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>item</th>
+                                        <th>price</th>
+                                        <th>change</th>
+                                        <th>volume</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="losersBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="trend-card active">
+                        <h3>most active <span class="trend-arrow">◆</span></h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>item</th>
+                                        <th>price</th>
+                                        <th>weekly vol</th>
+                                        <th>momentum</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activeBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 

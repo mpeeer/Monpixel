@@ -952,6 +952,43 @@ tr:hover .alert-row-btn { opacity: 0.5; }
     }
 }
 
+/* --- view counter --- */
+.view-counter {
+    position: fixed;
+    bottom: 14px;
+    right: 18px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    opacity: 0.45;
+    transition: opacity 0.3s ease;
+    z-index: 5;
+    user-select: none;
+    pointer-events: none;
+}
+
+.view-counter:hover {
+    opacity: 0.75;
+}
+
+.vc-icon {
+    font-size: 0.38rem;
+    color: var(--positive);
+    animation: vc-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes vc-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.vc-count {
+    letter-spacing: 0.04em;
+}
+
 @media (max-width: 768px) {
     body {
         padding: 0 12px;

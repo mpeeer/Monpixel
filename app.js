@@ -1955,6 +1955,69 @@ function updateCountdown() {
     }
 }
 
+// --- view counter ---
+(function initViewCounter() {
+    const vcCount = document.getElementById('vcCount');
+    if (!vcCount) return;
+
+    const NAMESPACE = 'monopixel';
+    const KEY = 'views';
+    const CACHE_KEY = 'vc_monopixel_views';
+
+    async function updateCounter() {
+        const alreadyCounted = sessionStorage.getItem('vc_counted');
+
+        if (!alreadyCounted) {
+            // First visit this session — hit (increment) the counter
+            try {
+                const hitRes = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`);
+                if (hitRes.ok) {
+                    const data = await hitRes.json();
+                    const count = data.value;
+                    vcCount.textContent = typeof count === 'number' ? count.toLocaleString() : count;
+                    sessionStorage.setItem('vc_counted', '1');
+                    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ count, ts: Date.now() })); } catch (e) {}
+                    return;
+                }
+            } catch (e) {
+                // Network error — fall through to get
+            }
+        }
+
+        // Already counted this session (or hit failed) — just fetch existing count
+        try {
+            const getRes = await fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`);
+            if (getRes.ok) {
+                const data = await getRes.json();
+                const count = data.value;
+                vcCount.textContent = typeof count === 'number' ? count.toLocaleString() : count;
+                return;
+            }
+        } catch (e) {}
+
+        // Last resort: show cached value
+        try {
+            const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+            if (cached && cached.count != null) {
+                vcCount.textContent = typeof cached.count === 'number' ? cached.count.toLocaleString() : cached.count;
+                return;
+            }
+        } catch (e) {}
+
+        vcCount.textContent = '—';
+    }
+
+    // Show cached value immediately while fetch happens
+    try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+        if (cached && cached.count != null) {
+            vcCount.textContent = typeof cached.count === 'number' ? cached.count.toLocaleString() : cached.count;
+        }
+    } catch (e) {}
+
+    updateCounter();
+})();
+
 // initial load + auto-refresh
 loadData();
 

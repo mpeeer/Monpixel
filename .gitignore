@@ -1,0 +1,8 @@
+node_modules/
+cache/
+dist/
+*.tsbuildinfo
+server/node_modules/
+.env
+*.log
+mongodb_data/

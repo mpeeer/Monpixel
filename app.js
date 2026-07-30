@@ -366,6 +366,8 @@ let prevSnapshot = {};
 let currentSort = { field: 'spreadPct', dir: 'desc' };
 let currentView = 'bazaar';
 let currentBazaarCategory = 'all';
+let newsItems = [];
+let newsLastFetched = 0;
 
 // --- categories ---
 function getCategory(id) {
@@ -733,6 +735,8 @@ const losersBody = document.getElementById('losersBody');
 const activeBody = document.getElementById('activeBody');
 const trendSearchInput = document.getElementById('trendSearchInput');
 const trendSearchResults = document.getElementById('trendSearchResults');
+const newsView = document.getElementById('newsView');
+const newsContainer = document.getElementById('newsContainer');
 const tabs = document.querySelectorAll('.tab');
 const ths = document.querySelectorAll('thead th.sortable');
 
@@ -828,6 +832,41 @@ async function fetchAuctionsPage(page) {
     } catch (e) {
         return null;
     }
+}
+
+async function fetchNews() {
+    // Use cache if fresh (< 30 min)
+    try {
+        const cached = localStorage.getItem('bz_news');
+        const cachedTs = localStorage.getItem('bz_news_ts');
+        if (cached && cachedTs && (Date.now() - parseInt(cachedTs) < 1800000)) {
+            newsItems = JSON.parse(cached);
+            newsLastFetched = parseInt(cachedTs);
+            if (currentView === 'news') renderNews();
+            return;
+        }
+    } catch(e) {}
+
+    try {
+        const res = await throttledFetch('https://api.hypixel.net/v2/skyblock/news');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.success || !data.items) return;
+        newsItems = data.items;
+            newsLastFetched = Date.now();
+        try {
+            localStorage.setItem('bz_news', JSON.stringify(data.items));
+            localStorage.setItem('bz_news_ts', Date.now().toString());
+        } catch(e) {}
+    } catch (e) {
+        console.warn('News fetch failed:', e);
+        // Try cache regardless of age on failure
+        try {
+            const cached = localStorage.getItem('bz_news');
+            if (cached) newsItems = JSON.parse(cached);
+        } catch(e2) {}
+    }
+    if (currentView === 'news') renderNews();
 }
 
 async function fetchAuctions() {
@@ -1144,6 +1183,47 @@ function renderMethods(items) {
     }
 }
 
+// --- news ---
+function renderNews() {
+    newsContainer.innerHTML = '';
+
+    if (newsItems.length === 0) {
+        newsContainer.innerHTML = '<div class="loading-row" style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text-muted)">loading news…</div>';
+        return;
+    }
+
+    for (const item of newsItems) {
+        const card = document.createElement('a');
+        card.className = 'news-card';
+        card.href = item.link;
+        card.target = '_blank';
+        card.rel = 'noopener';
+        card.innerHTML = `
+            <div class="news-card-header">
+                <span class="news-icon" title="${escapeHtml(item.item?.material || '')}">📰</span>
+                <h3>${escapeHtml(item.title)}</h3>
+            </div>
+            <span class="news-date">${escapeHtml(item.text)}</span>
+            <span class="news-link-hint">read on forums →</span>
+        `;
+        newsContainer.appendChild(card);
+    }
+
+    itemCountEl.textContent = newsItems.length + ' updates';
+
+    // Freshness timestamp
+    const intro = document.querySelector('#newsView .section-intro');
+    if (intro) {
+        let ts = intro.querySelector('.news-freshness');
+        if (!ts) {
+            ts = document.createElement('span');
+            ts.className = 'news-freshness';
+            intro.appendChild(ts);
+        }
+        ts.textContent = newsLastFetched > 0 ? ' · updated ' + timeAgo(newsLastFetched) : '';
+    }
+}
+
 // --- guides ---
 const GUIDES = [
     {
@@ -1347,6 +1427,8 @@ function renderAll() {
         renderTrends(allItems);
         renderTrendSearch('');
         itemCountEl.textContent = allItems.length + ' items';
+    } else if (currentView === 'news') {
+        renderNews();
     }
 }
 
@@ -1375,6 +1457,7 @@ tabs.forEach(tab => {
         fuseView.classList.toggle('active', currentView === 'fuse');
         auctionsView.classList.toggle('active', currentView === 'auctions');
         trendsView.classList.toggle('active', currentView === 'trends');
+        newsView.classList.toggle('active', currentView === 'news');
         if (currentView === 'auctions') loadAuctions();
         renderAll();
     });
@@ -1915,6 +1998,7 @@ async function loadData() {
     updateAlertBadge();
     renderAll();
     if (currentView === 'auctions') loadAuctions();
+    fetchNews();
     resetAutoRefresh();
 }
 
@@ -2020,6 +2104,7 @@ function updateCountdown() {
 
 // initial load + auto-refresh
 loadData();
+fetchNews();
 
 // initial sort indicator
 ths.forEach(th => {
